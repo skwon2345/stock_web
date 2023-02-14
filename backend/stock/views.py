@@ -59,6 +59,7 @@ class StockRetrieveUpdateDestroy(generics.RetrieveUpdateDestroyAPIView):
                         trend=chart_data["trend"],
                     )
                     candle.save()
+            # TODO: add else: to update latest candle information and stock.price information
 
         serializer = StockSerializer(obj)
         return Response(serializer.data)
