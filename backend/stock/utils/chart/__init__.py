@@ -7,6 +7,7 @@ from django.conf import settings
 
 class Chart:
     def __init__(self, symbol, resolution, start_date, end_date):
+        #TODO: Try one stock library: yfinance or finnhub?
         self.f = finnhub.Client(api_key=settings.FINNHUB_API_KEY)
 
         self.symbol = symbol

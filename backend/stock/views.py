@@ -39,6 +39,7 @@ class StockRetrieveUpdateDestroy(generics.RetrieveUpdateDestroyAPIView):
                     price=chart.data[-1]["Candle"]["Close"],
                     recommendation_key=company_info.info["recommendationKey"],
                 )
+                # TODO: search for safe save() way - Validation?
                 stock.save()
 
                 obj = Stock.objects.get(symbol=symbol)
