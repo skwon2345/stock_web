@@ -1,12 +1,6 @@
 from rest_framework.serializers import ModelSerializer
 
-from .models import Company, PriceHistory, Stock
-
-
-class CompanySerializer(ModelSerializer):
-    class Meta:
-        model = Company
-        fields = "__all__"
+from .models import Candle, Stock
 
 
 class StockSerializer(ModelSerializer):
@@ -15,7 +9,7 @@ class StockSerializer(ModelSerializer):
         fields = "__all__"
 
 
-class PriceHistorySerializer(ModelSerializer):
+class CandleSerializer(ModelSerializer):
     class Meta:
-        model = PriceHistory
+        model = Candle
         fields = "__all__"
