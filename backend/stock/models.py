@@ -23,7 +23,5 @@ class Candle(models.Model):
 
     date = models.DateField()
 
-    trend = models.CharField(max_length=10, null=True, blank=True)
-
     def __str__(self):
         return f"{str(self.date)} {str(self.symbol)}"
