@@ -7,7 +7,7 @@ from django.conf import settings
 
 class Chart:
     def __init__(self, symbol, resolution, start_date, end_date):
-        #TODO: Try one stock library: yfinance or finnhub?
+        # TODO: Try one stock library: yfinance or finnhub?
         self.f = finnhub.Client(api_key=settings.FINNHUB_API_KEY)
 
         self.symbol = symbol
@@ -204,14 +204,23 @@ class Chart:
                 d["trend"] = "undefined"
 
     def _process(self, symbol: str) -> list:
-        data = self.f.technical_indicator(
-            symbol=symbol,
-            resolution=self.resolution,
-            _from=self.start_timestamp,
-            to=self.end_timestamp,
-            indicator="rsi",
-            indicator_fields={"timeperiod": 14},
-        )
+        # TODO: Check <= 14 or < 14
+        if (self.end_timestamp - self.start_timestamp) / 86400 <= 14:
+            data = self.f.stock_candles(
+                symbol=symbol,
+                resolution=self.resolution,
+                _from=self.start_timestamp,
+                to=self.end_timestamp,
+            )
+        else:
+            data = self.f.technical_indicator(
+                symbol=symbol,
+                resolution=self.resolution,
+                _from=self.start_timestamp,
+                to=self.end_timestamp,
+                indicator="rsi",
+                indicator_fields={"timeperiod": 14},
+            )
 
         data = self._format(data)
 
