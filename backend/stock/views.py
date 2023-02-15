@@ -10,7 +10,7 @@ from .serializers import Candle, CandleSerializer, Stock, StockSerializer
 from .utils.chart import Chart
 
 
-class StockRetrieveUpdateDestroy(generics.RetrieveUpdateDestroyAPIView):
+class StockRetrieveDestroy(generics.RetrieveDestroyAPIView):
     queryset = Stock.objects.all()
     serializer_class = StockSerializer
     lookup_field = "symbol"
@@ -19,25 +19,26 @@ class StockRetrieveUpdateDestroy(generics.RetrieveUpdateDestroyAPIView):
     def retrieve(self, request, *args, **kwargs):
         symbol = self.kwargs.get("symbol")
         try:
-            obj = Stock.objects.get(symbol=symbol)
-        except Stock.DoesNotExist:
-            try:
-                # TODO: Check if yf contains latest price information
-                company = yf.Ticker(symbol)
-            except:
-                raise Http404
-            else:
-                company_info = company.info
-                obj = Stock.objects.create(
-                    symbol=symbol,
-                    name=company_info["shortName"],
-                    sector=company_info["sector"],
-                    website=company_info["website"],
-                    price=round(
-                        company.history(period="1d").Close.tolist()[0], 2
-                    ),
-                    recommendation_key=company_info.info["recommendationKey"],
-                )
+            # TODO: Check if yf contains latest price information
+            company = yf.Ticker(symbol)
+        except:
+            raise Http404
+        else:
+            company_info = company.info
+            stock_dict = {
+                "symbol": symbol,
+                "name": company_info["shortName"],
+                "sector": company_info["sector"],
+                "website": company_info["website"],
+                "price": round(
+                    company.history(period="1d").Close.tolist()[0], 2
+                ),
+                "recommendation_key": company_info.info["recommendationKey"],
+            }
+
+            obj, created = Stock.objects.update_or_create(
+                symbol=symbol, defaults=stock_dict
+            )
 
             # TODO: add else: to update latest candle information and stock.price information
 
