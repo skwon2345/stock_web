@@ -8,8 +8,7 @@ const Header = () => {
             <NavItem icon="b" />
             <NavItem icon="c" />
             <NavItem icon="d">
-                <p>Hello World!</p>
-
+                <DropdownMenu />
             </NavItem>
         </Navbar>
     )
@@ -34,6 +33,14 @@ function NavItem(props) {
             
             {open && props.children}
         </li>
+    );
+}
+
+function DropdownMenu() {
+    return (
+        <div className='dropdown'>
+
+        </div>
     );
 }
 
