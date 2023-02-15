@@ -1,7 +1,10 @@
-import {Header} from './components';
+import {Header, WatchList} from './components';
 function App() {
   return (
-    <Header />
+    <div className='App'>
+      <Header />
+      <WatchList />
+    </div>
   );
 }
 
