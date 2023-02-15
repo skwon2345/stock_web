@@ -9,5 +9,5 @@ class StockRetrieveUpdateDestroyTestCase(TestCase):
         """_summary_
         Test GET (retrieve) request.
         """
-        response = self.client.get(reverse("stock-rud", args=["NFLX"]))
+        response = self.client.get(reverse("stock-rd", args=["NFLX"]))
         self.assertEqual(response.status_code, 200)
