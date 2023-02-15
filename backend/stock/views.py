@@ -13,6 +13,7 @@ from .utils.chart import Chart
 class StockRetrieveUpdateDestroy(generics.RetrieveUpdateDestroyAPIView):
     queryset = Stock.objects.all()
     serializer_class = StockSerializer
+    lookup_field = "symbol"
     # permission_classes = [IsAdminUser]
 
     def retrieve(self, request, *args, **kwargs):
@@ -26,7 +27,7 @@ class StockRetrieveUpdateDestroy(generics.RetrieveUpdateDestroyAPIView):
                 raise Http404
             else:
                 company_info = company.info
-                stock = Stock(
+                obj = Stock.objects.create(
                     symbol=symbol,
                     name=company_info["shortName"],
                     sector=company_info["sector"],
@@ -36,36 +37,36 @@ class StockRetrieveUpdateDestroy(generics.RetrieveUpdateDestroyAPIView):
                     ),
                     recommendation_key=company_info.info["recommendationKey"],
                 )
-                # TODO: search for safe save() way - Validation?
-                stock.save()
 
-                obj = Stock.objects.get(symbol=symbol)
             # TODO: add else: to update latest candle information and stock.price information
 
-        serializer = StockSerializer(obj)
+        serializer = self.get_serializer(obj)
+
         return Response(serializer.data)
 
 
-class StockListCreate(generics.ListCreateAPIView):
+class StockListCreate(generics.ListAPIView):
     queryset = Stock.objects.all()
     serializer_class = StockSerializer
     # permission_classes = [IsAdminUser]
 
 
-class CandleListCreate(generics.ListCreateAPIView):
-    queryset = Candle.objects.all()
+class CandleList(generics.ListAPIView):
     serializer_class = CandleSerializer
     # permission_classes = [IsAdminUser]
 
-    def list(self, request, *args, **kwargs):
+    def get_queryset(self):
         """
         This view should return a list of all the purchases
         for the currently authenticated user.
         """
 
-        symbol = request.query_params.get("symbol")
-        from_date = request.query_params.get("from")
-        to_date = request.query_params.get("to")
+        symbol = self.request.query_params.get("symbol", None)
+        from_date = self.request.query_params.get("from", None)
+        to_date = self.request.query_params.get("to", None)
+
+        if not all([symbol, from_date, to_date]):
+            raise
 
         queryset = Candle.objects.filter(symbol=symbol)
 
@@ -90,15 +91,12 @@ class CandleListCreate(generics.ListCreateAPIView):
                 date.today().strftime("%Y-%m-%d %H:%M:%S"),
             )
 
-        queryset = (
+        return (
             Candle.objects.filter(symbol=symbol)
             .filter(date__gte=from_date)
             .filter(date__lte=to_date)
             .order_by("date")
         )
-
-        serializer = CandleSerializer(queryset, many=True)
-        return Response(serializer.data)
 
     def create_candles(
         self,
@@ -117,7 +115,7 @@ class CandleListCreate(generics.ListCreateAPIView):
         obj = Stock.objects.get(symbol=symbol)
 
         for chart_data in chart.data:
-            candle = Candle(
+            Candle.objects.create(
                 symbol=obj,
                 open=chart_data["Candle"]["Open"],
                 high=chart_data["Candle"]["High"],
@@ -127,7 +125,6 @@ class CandleListCreate(generics.ListCreateAPIView):
                     chart_data["Date"], "%Y-%m-%d %H:%M:%S"
                 ).date(),
             )
-            candle.save()
 
     def update_or_create_candles(
         self, symbol: str, resolution: str, from_date: str, to_date: str
@@ -159,6 +156,7 @@ class CandleListCreate(generics.ListCreateAPIView):
             }
 
             Candle.objects.update_or_create(
+                symbol=obj,
                 date=datetime.strptime(
                     chart_data["Date"], "%Y-%m-%d %H:%M:%S"
                 ).date(),
