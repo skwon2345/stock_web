@@ -1,9 +1,40 @@
-import React from 'react'
+import React, { useState, useEffect, useRef } from 'react';
+import './styles.css'
 
 const Header = () => {
-  return (
-    <div>Header</div>
-  )
+    return (
+        <Navbar>
+            <NavItem icon="a" />
+            <NavItem icon="b" />
+            <NavItem icon="c" />
+            <NavItem icon="d">
+                <p>Hello World!</p>
+
+            </NavItem>
+        </Navbar>
+    )
+}
+
+function Navbar(props) {
+    return (
+        <nav className="navbar">
+            <ul className="navbar-nav">{props.children}</ul>
+        </nav>
+    );
+}
+
+function NavItem(props) {
+    const [open, setOpen] = useState(false);
+
+    return (
+        <li className="nav-item">
+            <a href="#" className="icon-button" onClick={() => setOpen(!open)}>
+                {props.icon}
+            </a>
+            
+            {open && props.children}
+        </li>
+    );
 }
 
 export default Header
