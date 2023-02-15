@@ -45,7 +45,7 @@ class StockRetrieveUpdateDestroy(generics.RetrieveUpdateDestroyAPIView):
         return Response(serializer.data)
 
 
-class StockListCreate(generics.ListAPIView):
+class StockList(generics.ListAPIView):
     queryset = Stock.objects.all()
     serializer_class = StockSerializer
     # permission_classes = [IsAdminUser]
