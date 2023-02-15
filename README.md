@@ -30,5 +30,6 @@ npm install
 
 - `api/candle?symbol=<symbol>&from=<from_date>&to=<to_date>`
     - List all candle data that matches requested params.
+    - If candle data already exists, update the latest candles and save to database.
     - If candle data does not exist, retrieve all candle data from `1900-01-01` to today and save to database.
     - GET request should be made every 5 seconds.
