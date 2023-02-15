@@ -22,6 +22,7 @@ class StockRetrieveUpdateDestroy(generics.RetrieveUpdateDestroyAPIView):
             obj = Stock.objects.get(symbol=symbol)
         except Stock.DoesNotExist:
             try:
+                # TODO: Check if yf contains latest price information
                 company = yf.Ticker(symbol)
             except:
                 raise Http404
