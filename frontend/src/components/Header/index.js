@@ -4,14 +4,16 @@ import './styles.css'
 
 const Header = () => {
     return (
+        // <div ref={ref}>
         <Navbar>
-            <NavItem icon="a" />
-            <NavItem icon="b" />
-            <NavItem icon="c" />
-            <NavItem icon="d">
+            <NavItem icon="Menu">
+                <DropdownMenu />
+            </NavItem>
+            <NavItem icon="Login">
                 <DropdownMenu />
             </NavItem>
         </Navbar>
+        // </div>
     )
 }
 
@@ -24,16 +26,31 @@ function Navbar(props) {
 }
 
 function NavItem(props) {
+    const ref = useRef();
     const [open, setOpen] = useState(false);
 
+    useEffect(() => {
+        const checkIfClickedOutside = e => {
+            if (open && ref.current && !ref.current.contains(e.target)) {
+                setOpen(false);
+            }
+        }
+        document.addEventListener("mousedown", checkIfClickedOutside)
+    
+        return () => {
+            document.removeEventListener("mousedown", checkIfClickedOutside)
+        }
+    }, [open])
+
     return (
-        <li className="nav-item">
-            <a href="#" className="icon-button" onClick={() => setOpen(!open)}>
-                {props.icon}
-            </a>
-            
-            {open && props.children}
-        </li>
+        <div className="nav" ref={ref}>
+            <li className="nav-item">
+                <a href="#" className="icon-button" onClick={() => setOpen(!open)}>
+                    {props.icon}
+                </a>
+                {open && props.children}
+            </li>   
+        </div>
     );
 }
 
@@ -51,7 +68,7 @@ function DropdownMenu() {
     function DropdownItem(props) {
         return (
             <a href="#" className="menu-item" onClick={() => props.goToMenu && setActiveMenu(props.goToMenu)}>
-                <span className='icon-button'>{props.leftIcon}</span>
+                <span className='icon-left'>{props.leftIcon}</span>
                 {props.children}
                 <span className='icon-right'>{props.rightIcon}</span>
             </a>
