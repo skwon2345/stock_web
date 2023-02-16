@@ -44,6 +44,7 @@ class Chart:
                     "High": float(dx.get("h", 0.0)[i]),
                     "Low": float(dx.get("l", 0.0)[i]),
                     "Close": float(dx.get("c", 0.0)[i]),
+                    "Volume": float(dx.get("v", 0.0)[i]),
                 }
             )
             my_data = {
@@ -51,7 +52,6 @@ class Chart:
                     mktime(gmtime(dx.get("t")[i]))
                 ).strftime("%Y-%m-%d %H:%M:%S"),
                 "Time": dx.get("t")[i],
-                # "Volume": float(dx_data.get("volume")),
                 "Candle": arr_candle[cnt],
                 "i": cnt,
                 "calculations": arr_calc[cnt],
