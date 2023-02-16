@@ -1,31 +1,18 @@
-import React, { useState, useEffect } from 'react'
+import React, { useContext } from 'react'
 import './styles.css'
-import axios from 'axios';
+import { DataContext } from '../../context/DataProvider'
 
 const WatchList = () => {
-    const [stockCards, setStockCards] = useState([])
-
-    useEffect(() => {
-        const url = "/api/stock/";
-        axios.get(url)
-        .then(function(response) {
-            console.log(response.data);
-            setStockCards(response.data);
-        })
-        .catch(function(error) {
-            console.log("실패");
-        })
-        
-    },[])
+    const {stockData, setStockData} = useContext(DataContext);
 
     return (
         <div className='watchlist'>
             <ul>
-                {stockCards.map((stockCard, index) => {
+                {stockData.map((stock, index) => {
                     return (
                         <li key={index}>
                             <StockCard 
-                                stockCard={stockCard} 
+                                stock={stock} 
                                 id={index}
                             />
                         </li>
@@ -36,22 +23,25 @@ const WatchList = () => {
     )
 }
 
-export const StockCard = ({stockCard}) => {
+export const StockCard = ({stock}) => {
 
-    const colorClassName = stockCard.change > 0 ? 'red' : 'blue' 
+    function toTitleCase(str) {
+        return str.toLowerCase().split(' ').map(function (word) {
+            return (word.charAt(0).toUpperCase() + word.slice(1));
+        }).join(' ');
+    }
 
     return (
         <div className='stockCard'>
                 <div className='symbols'>
-                    <div className='symbol'>{stockCard.symbol}</div>
-                    <div>{stockCard.name}</div>
+                    <div className='symbol'>{stock.symbol}</div>
+                    <div className='name'>{stock.name}</div>
                 </div>
             <div className='signal'>
-                <h3>{stockCard.recommendation_key}</h3>
+                <h3>{toTitleCase(stock.recommendation_key)}</h3>
             </div>
-            <div className={`price ${colorClassName}`}>
-                <div className='lastPrice'> $ {stockCard.price}</div>
-                {/* <div className='change'>{stockCard.change} ({stockCard.percentageChange})</div> */}
+            <div className='price'>
+                <div className='lastPrice'> $ {stock.price}</div>
             </div>
         </div>
     )
