@@ -10,8 +10,8 @@
   max-width: 800px;
   height: 100px;
   color: rgb(216, 216, 216);
+  border-bottom: 7px solid gray;
   background-color: rgb(70, 70, 70);
-  border-bottom: 7px solid rgb(105, 105, 243);
   margin: 25px;
   padding: 0px 40px;
   border-radius: 12px;
@@ -31,19 +31,11 @@
   height: auto;
 }
 
-.red {
-  color: rgb(241, 71, 71);
-}
-
-.blue {
-  color: rgb(108, 106, 250);
-}
-
 .lastPrice {
-  font-size: 1.6em;
+  font-size: 1.4em;
   font-weight: 600;
 }
 
 .price > .change {
-  font-size: 1.3em;
+  font-size: 1.2em;
 }

@@ -50,18 +50,23 @@ const WatchList = () => {
 
 
 export const StockCard = ({stockCard, key}) => {
+
+    const colorClassName = stockCard.change > 0 ? 'red' : 'blue' 
+
     return (
         <div className='stockCard'>
-            <div className='symbol'>
-                <h1>{stockCard.symbol}</h1>
-            </div>
+                <div className='symbol'>
+                    <h2>{stockCard.symbol}</h2>
+                </div>
+            
             <div className='signal'>
                 <h3>{stockCard.signal}</h3>
             </div>
-            <div className={`${stockCard.change > 0? 'red' : 'blue' }`}>
+            <div className={`price ${colorClassName}`}>
                 <div className='lastPrice'> $ {stockCard.lastPrice}</div>
                 <div className='change'>{stockCard.change} ({stockCard.percentageChange})</div>
             </div>
+            
         </div>
     )
 }
