@@ -3,8 +3,8 @@ from django.db import models
 
 class Stock(models.Model):
     symbol = models.CharField(max_length=10, primary_key=True)
-    name = models.CharField(max_length=30)
-    sector = models.CharField(max_length=30)
+    name = models.CharField(max_length=100)
+    sector = models.CharField(max_length=100)
     website = models.URLField(max_length=100)
     price = models.FloatField()
     recommendation_key = models.CharField(max_length=30, null=True, blank=True)
