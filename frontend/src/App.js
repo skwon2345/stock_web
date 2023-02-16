@@ -1,9 +1,14 @@
-import {Header, WatchList} from './components';
+import {Header, StockDetails, WatchList} from './components';
+import { DataProvider } from './context/DataProvider';
+
 function App() {
   return (
     <div className='App'>
       <Header />
-      <WatchList />
+      <DataProvider>
+        <WatchList />
+        <StockDetails />
+      </DataProvider>
     </div>
   );
 }

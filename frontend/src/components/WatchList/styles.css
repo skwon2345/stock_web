@@ -5,14 +5,16 @@
 
 .stockCard {
   display: flex;
+  position: relative;
   justify-content: space-between;
   align-items: center;
-  max-width: 800px;
-  height: 100px;
+  max-width: 680px;
+  height: 60px;
   color: rgb(216, 216, 216);
-  border-bottom: 7px solid gray;
-  background-color: rgb(70, 70, 70);
-  margin: 25px;
+  border-bottom: 6px solid #64a59d;
+  border-right: 3px solid #64a59d;
+  background-color: rgb(67, 67, 67);
+  margin: 20px;
   padding: 0px 40px;
   border-radius: 12px;
   cursor: pointer;
@@ -20,7 +22,24 @@
 }
 
 .stockCard:hover {
-  transform: scale(1.05);
+  transform: scale(1.03);
+}
+
+.symbol {
+  font-size: 1.5em;
+  margin-bottom: 2px;
+  font-weight: 700;
+}
+
+.name {
+  font-size: 1em;
+  width: 190px;
+}
+
+.signal {
+  font-size: 1.2em;
+  position: absolute;
+  right: 40%;
 }
 
 .price {
@@ -32,10 +51,6 @@
 }
 
 .lastPrice {
-  font-size: 1.4em;
+  font-size: 1.3em;
   font-weight: 600;
-}
-
-.price > .change {
-  font-size: 1.2em;
 }

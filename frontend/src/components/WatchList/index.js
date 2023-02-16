@@ -1,43 +1,18 @@
-import React, { useState } from 'react'
+import React, { useContext } from 'react'
 import './styles.css'
+import { DataContext } from '../../context/DataProvider'
 
 const WatchList = () => {
-    const [stockCards, setStockCards] = useState([
-        {
-            symbol: "Tesla, Inc. (TSLA)",
-            lastPrice: 101.16,
-            change: +1.46,
-            percentageChange: "+1.46%",
-            // graph: "",
-            signal: "STRONG BUY"
-        },
-        {
-            symbol: "Tesla, Inc. (TSLA)",
-            lastPrice: 101.16,
-            change: -1.46,
-            percentageChange: "+1.46%",
-            // graph: "",
-            signal: "STRONG BUY"
-        },
-        {
-            symbol: "Tesla, Inc. (TSLA)",
-            lastPrice: 101.16,
-            change: +1.46,
-            percentageChange: "+1.46%",
-            // graph: "",
-            signal: "STRONG BUY"
-        },
-    ]);
-
+    const {stockData, setStockData} = useContext(DataContext);
 
     return (
         <div className='watchlist'>
             <ul>
-                {stockCards.map((stockCard, index) => {
+                {stockData.map((stock, index) => {
                     return (
-                        <li>
+                        <li key={index}>
                             <StockCard 
-                                stockCard={stockCard} 
+                                stock={stock} 
                                 id={index}
                             />
                         </li>
@@ -48,25 +23,26 @@ const WatchList = () => {
     )
 }
 
+export const StockCard = ({stock}) => {
 
-export const StockCard = ({stockCard, key}) => {
-
-    const colorClassName = stockCard.change > 0 ? 'red' : 'blue' 
+    function toTitleCase(str) {
+        return str.toLowerCase().split(' ').map(function (word) {
+            return (word.charAt(0).toUpperCase() + word.slice(1));
+        }).join(' ');
+    }
 
     return (
         <div className='stockCard'>
-                <div className='symbol'>
-                    <h2>{stockCard.symbol}</h2>
+                <div className='symbols'>
+                    <div className='symbol'>{stock.symbol}</div>
+                    <div className='name'>{stock.name}</div>
                 </div>
-            
             <div className='signal'>
-                <h3>{stockCard.signal}</h3>
+                <h3>{toTitleCase(stock.recommendation_key)}</h3>
             </div>
-            <div className={`price ${colorClassName}`}>
-                <div className='lastPrice'> $ {stockCard.lastPrice}</div>
-                <div className='change'>{stockCard.change} ({stockCard.percentageChange})</div>
+            <div className='price'>
+                <div className='lastPrice'> $ {stock.price}</div>
             </div>
-            
         </div>
     )
 }
