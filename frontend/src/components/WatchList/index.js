@@ -1,33 +1,22 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import './styles.css'
+import axios from 'axios';
 
 const WatchList = () => {
-    const [stockCards, setStockCards] = useState([
-        {
-            symbol: "Tesla, Inc. (TSLA)",
-            lastPrice: 101.16,
-            change: +1.46,
-            percentageChange: "+1.46%",
-            // graph: "",
-            signal: "STRONG BUY"
-        },
-        {
-            symbol: "Tesla, Inc. (TSLA)",
-            lastPrice: 101.16,
-            change: -1.46,
-            percentageChange: "+1.46%",
-            // graph: "",
-            signal: "STRONG BUY"
-        },
-        {
-            symbol: "Tesla, Inc. (TSLA)",
-            lastPrice: 101.16,
-            change: +1.46,
-            percentageChange: "+1.46%",
-            // graph: "",
-            signal: "STRONG BUY"
-        },
-    ]);
+    const [stockCards, setStockCards] = useState([])
+
+    useEffect(() => {
+        const url = "/api/stock/";
+        axios.get(url)
+        .then(function(response) {
+            console.log(response.data);
+            setStockCards(response.data);
+        })
+        .catch(function(error) {
+            console.log("실패");
+        })
+        
+    },[])
 
 
     return (
@@ -35,7 +24,7 @@ const WatchList = () => {
             <ul>
                 {stockCards.map((stockCard, index) => {
                     return (
-                        <li>
+                        <li key={index}>
                             <StockCard 
                                 stockCard={stockCard} 
                                 id={index}
@@ -49,22 +38,26 @@ const WatchList = () => {
 }
 
 
-export const StockCard = ({stockCard, key}) => {
+export const StockCard = ({stockCard}) => {
 
     const colorClassName = stockCard.change > 0 ? 'red' : 'blue' 
+    
+    
+
 
     return (
         <div className='stockCard'>
                 <div className='symbol'>
                     <h2>{stockCard.symbol}</h2>
+                    <p>{stockCard.name}</p>
                 </div>
             
             <div className='signal'>
-                <h3>{stockCard.signal}</h3>
+                <h3>{stockCard.recommendation_key}</h3>
             </div>
             <div className={`price ${colorClassName}`}>
-                <div className='lastPrice'> $ {stockCard.lastPrice}</div>
-                <div className='change'>{stockCard.change} ({stockCard.percentageChange})</div>
+                <div className='lastPrice'> $ {stockCard.price}</div>
+                {/* <div className='change'>{stockCard.change} ({stockCard.percentageChange})</div> */}
             </div>
             
         </div>
