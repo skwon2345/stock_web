@@ -1,0 +1,41 @@
+.watchlist {
+  color: white;
+  /* height: 700px; */
+}
+
+.stockCard {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  max-width: 800px;
+  height: 100px;
+  color: rgb(216, 216, 216);
+  border-bottom: 7px solid gray;
+  background-color: rgb(70, 70, 70);
+  margin: 25px;
+  padding: 0px 40px;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.stockCard:hover {
+  transform: scale(1.05);
+}
+
+.price {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  row-gap: 10px;
+  height: auto;
+}
+
+.lastPrice {
+  font-size: 1.4em;
+  font-weight: 600;
+}
+
+.price > .change {
+  font-size: 1.2em;
+}
