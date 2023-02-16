@@ -18,7 +18,6 @@ const WatchList = () => {
         
     },[])
 
-
     return (
         <div className='watchlist'>
             <ul>
@@ -37,21 +36,16 @@ const WatchList = () => {
     )
 }
 
-
 export const StockCard = ({stockCard}) => {
 
     const colorClassName = stockCard.change > 0 ? 'red' : 'blue' 
-    
-    
-
 
     return (
         <div className='stockCard'>
-                <div className='symbol'>
-                    <h2>{stockCard.symbol}</h2>
-                    <p>{stockCard.name}</p>
+                <div className='symbols'>
+                    <div className='symbol'>{stockCard.symbol}</div>
+                    <div>{stockCard.name}</div>
                 </div>
-            
             <div className='signal'>
                 <h3>{stockCard.recommendation_key}</h3>
             </div>
@@ -59,7 +53,6 @@ export const StockCard = ({stockCard}) => {
                 <div className='lastPrice'> $ {stockCard.price}</div>
                 {/* <div className='change'>{stockCard.change} ({stockCard.percentageChange})</div> */}
             </div>
-            
         </div>
     )
 }
