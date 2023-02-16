@@ -1,5 +1,6 @@
 import React from 'react';
 import './styles.css';
+import { DataProvider } from '../../context/DataProvider';
 
 const StockDetails = () => {
   return (

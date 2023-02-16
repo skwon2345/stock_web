@@ -1,4 +1,4 @@
-import {Header, StockDetails, WatchList} from './components';
+import {Header, Home} from './components';
 import { DataProvider } from './context/DataProvider';
 
 function App() {
@@ -6,8 +6,7 @@ function App() {
     <div className='App'>
       <Header />
       <DataProvider>
-        <WatchList />
-        <StockDetails />
+        <Home />
       </DataProvider>
     </div>
   );
