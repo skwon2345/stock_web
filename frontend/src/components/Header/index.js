@@ -3,14 +3,31 @@ import { CSSTransition } from 'react-transition-group';
 import './styles.css'
 
 const Header = () => {
+    function MenuItem(id=0, left="", content="", right={}) {
+        this.id = id;
+        this.left = left;
+        this.content = content;
+        this.right = right;
+    }
+
+    const menu_list = [
+        new MenuItem(0, "", "My Profile", {}),
+        new MenuItem(1, "", "My Profile2", {enter:">", exit:"X", content:[
+            new MenuItem(0, "", "My Profile2", "")
+        ]}),
+    ];
+    const login_list = [
+        new MenuItem(0, "", "My Profile", {})
+    ];
+
     return (
         // <div ref={ref}>
         <Navbar>
             <NavItem icon="Menu">
-                <DropdownMenu />
+                <DropdownMenu item={menu_list}/>
             </NavItem>
             <NavItem icon="Login">
-                <DropdownMenu />
+                <DropdownMenu item={login_list}/>
             </NavItem>
         </Navbar>
         // </div>
@@ -54,7 +71,7 @@ function NavItem(props) {
     );
 }
 
-function DropdownMenu() {
+function DropdownMenu(props) {
 
     const [activeMenu, setActiveMenu] = useState('main'); // settings, anmials
     const [menuHeight, setMenuHeight] = useState(null);
@@ -63,7 +80,6 @@ function DropdownMenu() {
         const height = el.offsetHeight;
         setMenuHeight(height);
     }
-
 
     function DropdownItem(props) {
         return (
@@ -74,15 +90,25 @@ function DropdownMenu() {
             </a>
         )
     }
+
     return (
         <div className='dropdown' style={{ height: menuHeight }}>
-            <CSSTransition in={activeMenu === "main"} unmountOnExit timeout={500} classNames="menu-primary" onEnter={calcHeight}>
-                <div className='menu'>
-                    <DropdownItem>My Profile</DropdownItem>
-                    <DropdownItem leftIcon="left" rightIcon="right" goToMenu="settings">Settings</DropdownItem>
-                </div>
-            </CSSTransition>
-            <CSSTransition in={activeMenu === "settings"} unmountOnExit timeout={500} classNames="menu-secondary" onEnter={calcHeight}>
+            {            
+                // console.log("fe")
+                props.item.map(({id, left, content, right}) => {
+                    console.log(id)
+                    return (
+                        <CSSTransition key={id} in={activeMenu === "main"} unmountOnExit timeout={500} classNames="menu-primary" onEnter={calcHeight}>
+                            <div className='menu'>
+                                <DropdownItem>{content}</DropdownItem>
+                                {right && <DropdownItem leftIcon={left} content={content} rightIcon={right.enter} goToMenu={content}>{content}</DropdownItem>}
+                            </div>
+                        </CSSTransition>
+                    )
+                })
+            }
+            
+            {/* <CSSTransition in={activeMenu === "settings"} unmountOnExit timeout={500} classNames="menu-secondary" onEnter={calcHeight}>
                 <div className='menu'>
                     <DropdownItem leftIcon="<-" goToMenu="main"></DropdownItem>
                     <DropdownItem>Settings</DropdownItem>
@@ -97,7 +123,7 @@ function DropdownMenu() {
                     <DropdownItem>Settings</DropdownItem>
                     <DropdownItem>Settings</DropdownItem>
                 </div>
-            </CSSTransition>
+            </CSSTransition> */}
         </div>
     );
 }

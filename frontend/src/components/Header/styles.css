@@ -42,6 +42,7 @@
   justify-content: center;
   transition: filter 300ms;
 }
+
   /* Icon Button */
 .icon-button {
     --button-size: calc(var(--nav-size) * 0.5);
