@@ -1,9 +1,10 @@
 import React, { useContext } from 'react'
 import './styles.css'
 import { DataContext } from '../../context/DataProvider'
+import { Link } from 'react-router-dom';
 
 const WatchList = () => {
-    const {stockData, setStockData} = useContext(DataContext);
+    const {stockData} = useContext(DataContext);
 
     return (
         <div className='watchlist'>
@@ -32,18 +33,20 @@ export const StockCard = ({stock}) => {
     }
 
     return (
-        <div className='stockCard'>
+        <Link to="/stockdetails">
+            <div className='stockCard'>
                 <div className='symbols'>
                     <div className='symbol'>{stock.symbol}</div>
                     <div className='name'>{stock.name}</div>
                 </div>
-            <div className='signal'>
-                <h3>{toTitleCase(stock.recommendation_key)}</h3>
+                <div className='signal'>
+                    <h3>{toTitleCase(stock.recommendation_key)}</h3>
+                </div>
+                <div className='price'>
+                    <div className='lastPrice'> $ {stock.price}</div>
+                </div>
             </div>
-            <div className='price'>
-                <div className='lastPrice'> $ {stock.price}</div>
-            </div>
-        </div>
+        </Link>
     )
 }
 
