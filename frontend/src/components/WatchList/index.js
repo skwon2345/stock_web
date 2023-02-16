@@ -3,7 +3,7 @@ import './styles.css'
 import { DataContext } from '../../context/DataProvider'
 
 const WatchList = () => {
-    const {stockData, setStockData} = useContext(DataContext);
+    const {stockData} = useContext(DataContext);
 
     return (
         <div className='watchlist'>
