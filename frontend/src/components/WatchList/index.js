@@ -14,7 +14,7 @@ const WatchList = () => {
         {
             symbol: "Tesla, Inc. (TSLA)",
             lastPrice: 101.16,
-            change: +1.46,
+            change: -1.46,
             percentageChange: "+1.46%",
             // graph: "",
             signal: "STRONG BUY"
@@ -29,6 +29,7 @@ const WatchList = () => {
         },
     ]);
 
+
     return (
         <div className='watchlist'>
             <ul>
@@ -37,7 +38,7 @@ const WatchList = () => {
                         <li>
                             <StockCard 
                                 stockCard={stockCard} 
-                                key={index}
+                                id={index}
                             />
                         </li>
                     )
@@ -57,7 +58,7 @@ export const StockCard = ({stockCard, key}) => {
             <div className='signal'>
                 <h3>{stockCard.signal}</h3>
             </div>
-            <div className='price'>
+            <div className={`${stockCard.change > 0? 'red' : 'blue' }`}>
                 <div className='lastPrice'> $ {stockCard.lastPrice}</div>
                 <div className='change'>{stockCard.change} ({stockCard.percentageChange})</div>
             </div>
