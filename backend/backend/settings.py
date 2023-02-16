@@ -21,6 +21,9 @@ FINNHUB_API_KEY = os.getenv("FINNHUB_API_KEY")
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
+# CORS_ORIGIN_ALLOW_ALL = True
+CORS_ORIGIN_WHITELIST = ["http://localhost:3000"]
+
 ALLOWED_HOSTS = []
 
 
@@ -35,6 +38,7 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "stock.apps.StockConfig",
     "rest_framework",
+    "corsheaders",
 ]
 
 MIDDLEWARE = [
@@ -45,6 +49,7 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    "corsheaders.middleware.CorsMiddleware",
 ]
 
 ROOT_URLCONF = "backend.urls"
