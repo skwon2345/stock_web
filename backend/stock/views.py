@@ -123,6 +123,7 @@ class CandleList(generics.ListAPIView):
                 high=chart_data["Candle"]["High"],
                 low=chart_data["Candle"]["Low"],
                 close=chart_data["Candle"]["Close"],
+                volume=chart_data["Candle"]["Volume"],
                 date=datetime.strptime(
                     chart_data["Date"], "%Y-%m-%d %H:%M:%S"
                 ).date(),
@@ -152,6 +153,7 @@ class CandleList(generics.ListAPIView):
                 "high": chart_data["Candle"]["High"],
                 "low": chart_data["Candle"]["Low"],
                 "close": chart_data["Candle"]["Close"],
+                "volume": chart_data["Candle"]["Volume"],
                 "date": datetime.strptime(
                     chart_data["Date"], "%Y-%m-%d %H:%M:%S"
                 ).date(),

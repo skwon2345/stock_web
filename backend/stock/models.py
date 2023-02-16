@@ -20,6 +20,7 @@ class Candle(models.Model):
     high = models.FloatField()
     low = models.FloatField()
     close = models.FloatField()
+    volume = models.IntegerField(default=0)
 
     date = models.DateField()
 
