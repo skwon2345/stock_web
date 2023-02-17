@@ -10,7 +10,7 @@ function App() {
       <DataProvider>
         <Routes>
           <Route path="/" element={<Home />}/>
-          <Route path="/stockdetails" element={<StockDetails />}/>
+          <Route path="/stockdetails/:symbol" element={<StockDetails />} />
         </Routes>
       </DataProvider>
     </div>

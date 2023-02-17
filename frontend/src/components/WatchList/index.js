@@ -3,19 +3,23 @@ import './styles.css'
 import { DataContext } from '../../context/DataProvider'
 import { Link } from 'react-router-dom';
 
+
 const WatchList = () => {
     const {stockData} = useContext(DataContext);
 
     return (
         <div className='watchlist'>
+
             <ul>
                 {stockData.map((stock, index) => {
                     return (
                         <li key={index}>
-                            <StockCard 
-                                stock={stock} 
-                                id={index}
-                            />
+                            <Link to={`/stockdetails/${stock.symbol}`}>
+                                <StockCard 
+                                    stock={stock} 
+                                    id={index}
+                                />
+                            </Link>
                         </li>
                     )
                 })}
@@ -33,7 +37,6 @@ export const StockCard = ({stock}) => {
     }
 
     return (
-        <Link to="/stockdetails">
             <div className='stockCard'>
                 <div className='symbols'>
                     <div className='symbol'>{stock.symbol}</div>
@@ -46,7 +49,6 @@ export const StockCard = ({stock}) => {
                     <div className='lastPrice'> $ {stock.price}</div>
                 </div>
             </div>
-        </Link>
     )
 }
 
