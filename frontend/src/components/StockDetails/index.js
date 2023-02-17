@@ -1,13 +1,17 @@
 import React from 'react';
+import { useParams} from 'react-router-dom';
+import { DataContext } from '../../context/DataProvider'
 import './styles.css';
-import { DataProvider } from '../../context/DataProvider';
 
 const StockDetails = () => {
-  return (
-    <div className='stockDetails'>
-      <p>sdf</p>
-    </div>
+    const symbol  = useParams().symbol;
+    console.log(symbol)
+  
+    return (
+      <div className='stockDetails'>
+        <div>{symbol}</div>
+      </div>
   )
 }
 
-export default StockDetails
+export default StockDetails;
