@@ -5,6 +5,7 @@ export const DataContext = createContext();
 
 export const DataProvider = (props) => {
     const [stockData, setStockData] = useState([]);
+    console.log("11");
 
     useEffect(() => {
         const fetchStockData = async () => {
