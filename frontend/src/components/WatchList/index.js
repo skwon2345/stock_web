@@ -14,7 +14,7 @@ const WatchList = () => {
                 {stockData.map((stock, index) => {
                     return (
                         <li key={index}>
-                            <Link to={`/stockdetails/${stock.symbol}`}>
+                            <Link to={`/stockdetails/${stock.symbol}`} state={stock}>
                                 <StockCard 
                                     stock={stock} 
                                     id={index}
