@@ -1,11 +1,29 @@
-import React, { useContext } from 'react'
+import React, { useEffect, useState } from 'react'
 import './styles.css'
-import { DataContext } from '../../context/DataProvider'
 import { Link } from 'react-router-dom';
-
+import axios from 'axios';
 
 const WatchList = () => {
-    const {stockData} = useContext(DataContext);
+    const [stockData, setStockData] = useState([]);
+
+    useEffect(() => {
+        async function fetchStockData()  {
+            const url = "/api/stock/";
+            await axios.get(url)
+            .then(function(response) {
+                // console.log(response.data);
+                setStockData(response.data);
+            })
+            .catch(function(error) {
+                console.log("실패(데이터)");
+            })
+        }
+        fetchStockData();
+    },[])
+
+    if (!stockData) {
+    return null;
+    } 
 
     return (
         <div className='watchlist'>
@@ -14,7 +32,7 @@ const WatchList = () => {
                 {stockData.map((stock, index) => {
                     return (
                         <li key={index}>
-                            <Link to={`/stockdetails/${stock.symbol}`} state={stock}>
+                            <Link to={`/stockdetails/${stock.symbol}`} state={stock.symbol}>
                                 <StockCard 
                                     stock={stock} 
                                     id={index}
