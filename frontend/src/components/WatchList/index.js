@@ -2,12 +2,9 @@ import React, { useEffect, useState } from 'react'
 import './styles.css'
 import { Link } from 'react-router-dom';
 import axios from 'axios';
-import {useQuery} from 'react-query'
-
 
 const WatchList = () => {
     const [stockData, setStockData] = useState([]);
-    const fetchStockData = useQuery();
 
     useEffect(() => {
         async function fetchStockData()  {
