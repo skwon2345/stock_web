@@ -22,6 +22,8 @@ class Chart:
         self.uptrend = []
         self.downtrend = []
 
+        self.vertices = []
+
         self.data = self._process(self.symbol)
 
         self.f.indices_const()
@@ -168,8 +170,23 @@ class Chart:
         for i in range(len(trend_list) - 1):
             if trend_list[i][1] > trend_list[i + 1][1]:
                 downtrend.append(dict([trend_list[i], trend_list[i + 1]]))
+                if i == 0:
+                    self.vertices.append(
+                        (trend_list[i][0], trend_list[i][1], "uptrend")
+                    )
+                self.vertices.append(
+                    (trend_list[i + 1][0], trend_list[i + 1][1], "downtrend")
+                )
             else:
                 uptrend.append(dict([trend_list[i], trend_list[i + 1]]))
+                uptrend.append(dict([trend_list[i], trend_list[i + 1]]))
+                if i == 0:
+                    self.vertices.append(
+                        (trend_list[i][0], trend_list[i][1], "downtrend")
+                    )
+                self.vertices.append(
+                    (trend_list[i + 1][0], trend_list[i + 1][1], "uptrend")
+                )
 
         self.uptrend = uptrend
         self.downtrend = downtrend
