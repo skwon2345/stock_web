@@ -13,11 +13,11 @@ const Header = () => {
     const menu_list = [
         new MenuItem(0, "", "My Profile", {}),
         new MenuItem(1, "", "My Profile2", {enter:">", exit:"X", content:[
-            new MenuItem(0, "", "My Profile2", "")
+            new MenuItem(0, "", "My Profile3", {})
         ]}),
     ];
     const login_list = [
-        new MenuItem(0, "", "My Profile", {})
+        new MenuItem(0, "", "My Profil1e", {})
     ];
 
     return (
@@ -91,39 +91,49 @@ function DropdownMenu(props) {
         )
     }
 
+    function RenderMe(props) {
+        return (
+            <>
+                
+            </>
+        )
+
+    }
+
     return (
         <div className='dropdown' style={{ height: menuHeight }}>
             {            
-                // console.log("fe")
                 props.item.map(({id, left, content, right}) => {
-                    console.log(id)
+                    let menuItem;
+                    let nestedMenuItem;
+                    if (Object.keys(right).length) {
+                        menuItem = <DropdownItem key={id} leftIcon={left} content={content} rightIcon={right.enter} goToMenu={content}>{content}</DropdownItem>;
+                        nestedMenuItem = (
+                                <CSSTransition in={activeMenu === {content}} unmountOnExit timeout={500} classNames="menu-secondary" onEnter={calcHeight}>
+                                    <div className='menu'>
+                                        <DropdownItem key={id} leftIcon={right.exit} goToMenu="main"></DropdownItem>
+                                    </div>
+                                </CSSTransition>
+                            )
+                        console.log(activeMenu)
+
+                    } else {
+                        menuItem = <DropdownItem key={id} leftIcon={left}>{content}</DropdownItem>
+                    }
+                    console.log(activeMenu)
+
                     return (
-                        <CSSTransition key={id} in={activeMenu === "main"} unmountOnExit timeout={500} classNames="menu-primary" onEnter={calcHeight}>
-                            <div className='menu'>
-                                <DropdownItem>{content}</DropdownItem>
-                                {right && <DropdownItem leftIcon={left} content={content} rightIcon={right.enter} goToMenu={content}>{content}</DropdownItem>}
-                            </div>
-                        </CSSTransition>
+                        <div key={id}>
+                            <CSSTransition key={id} in={(activeMenu === "main")} unmountOnExit timeout={500} classNames="menu-primary" onEnter={calcHeight}>
+                                <div className='menu'>
+                                    {menuItem}
+                                </div>
+                            </CSSTransition>
+                            { nestedMenuItem && console.log(nestedMenuItem.props) }
+                        </div>
                     )
                 })
             }
-            
-            {/* <CSSTransition in={activeMenu === "settings"} unmountOnExit timeout={500} classNames="menu-secondary" onEnter={calcHeight}>
-                <div className='menu'>
-                    <DropdownItem leftIcon="<-" goToMenu="main"></DropdownItem>
-                    <DropdownItem>Settings</DropdownItem>
-                    <DropdownItem>Settings</DropdownItem>
-                    <DropdownItem>Settings</DropdownItem>
-                    <DropdownItem>Settings</DropdownItem>
-                    <DropdownItem>Settings</DropdownItem>
-                    <DropdownItem>Settings</DropdownItem>
-                    <DropdownItem>Settings</DropdownItem>
-                    <DropdownItem>Settings</DropdownItem>
-                    <DropdownItem>Settings</DropdownItem>
-                    <DropdownItem>Settings</DropdownItem>
-                    <DropdownItem>Settings</DropdownItem>
-                </div>
-            </CSSTransition> */}
         </div>
     );
 }
