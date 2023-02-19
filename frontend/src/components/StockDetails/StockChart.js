@@ -14,10 +14,6 @@ import './styles.css'
 export const StockChart =({stock_symbol}) => {
     const [chartData, setChartData] = useState([]);
 
-    const ohlc=[]
-    const volume=[]
-    console.log("sdf")
-
     Indicators(Highcharts);
     DragPanes(Highcharts);
     AnnotationsAdvanced(Highcharts);
@@ -26,41 +22,54 @@ export const StockChart =({stock_symbol}) => {
     StockTools(Highcharts);
 
     useEffect(()=> {
-        
-    })
+        const fetchData = async () => {
+            const chart_url = `/api/candle/?symbol=${stock_symbol}&from=2022-01-01&to=2023-02-16`
+            await axios.get(chart_url)
+            .then(function(response) {
+                // console.log(response.data);
+                setChartData(response.data);
+            })
+            .catch(function(error) {
+                console.log("실패(차트)");
+            })
+        }
+        fetchData();
+    },[])
 
-    function afterSetExtremes(e) {
-        const { chart } = e.target;
-        chart.showLoading('Loading data from server...');
-        fetch(`/api/candle/?symbol=${stock_symbol}&from=2022-01-01&to=2023-02-16$?start=${Math.round(e.min)}&end=${Math.round(e.max)}`)
-            .then(res => res.ok && res.json())
-            .then(data => {
-                chart.series[0].setChartData(data);
-                console.log("성공(차트)")
-                chart.hideLoading();
-            }).catch(error =>  console.log("실패(차트)"));
-    }
+    // function afterSetExtremes(e) {
+    //     const { chart } = e.target;
+    //     chart.showLoading('Loading data from server...');
+    //     fetch(`/api/candle/?symbol=${stock_symbol}&from=2022-01-01&to=2023-02-16$?start=${Math.round(e.min)}&end=${Math.round(e.max)}`)
+    //         .then(res => res.ok && res.json())
+    //         .then(data => {
+    //             chart.series[0].setChartData(data);
+    //             console.log("성공(차트)")
+    //             chart.hideLoading();
+    //         }).catch(error =>  console.log("실패(차트)"));
+    // }
 
     if (chartData.length === 0) {
         return null;
     } 
 
+    const ohlc= []
+    const volume=[]
     chartData?.map((item) => {
         ohlc.push([Date.parse(item.date), item.open, item.high, item.low, item.close])
         volume.push([Date.parse(item.date), item.volume])
     })
     // Add a null value for the end date
-    chartData.push([Date.UTC(2011, 9, 14, 18), null, null, null, null]);
+    // chartData.push([Date.UTC(2011, 9, 14, 18), null, null, null, null]);
 
     const options = {
         plotOptions: {
-            ohlc: {
+            candlestick: {
                 color: 'red',
                 upColor: 'green'
             },
         },
         series : [{
-            type: 'ohlc',
+            type: 'candlestick',
             name : 'Stock Price', 
             data : ohlc,
             yAxis : 0,
@@ -103,7 +112,7 @@ export const StockChart =({stock_symbol}) => {
             lineWidth: 2,
             resize: {
                 enabled: true
-            }
+            },
         }, {
             labels: {
                 align: 'right',
@@ -120,12 +129,12 @@ export const StockChart =({stock_symbol}) => {
             offset: 0,
             lineWidth: 2
         }],
-        xAxis: {
-                events: {
-                    afterSetExtremes: (e) => afterSetExtremes(e)
-                },
-                minRange: 3600 * 1000 // one hour
-            },
+        // xAxis: {
+        //         events: {
+        //             afterSetExtremes: (e) => afterSetExtremes(e)
+        //         },
+        //         minRange: 3600 * 1000 // one hour
+        //     },
         tooltip: {
             split: true
         },

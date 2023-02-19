@@ -5,14 +5,15 @@ import { StockChart } from './StockChart'
 import './styles.css';
 
 const StockDetails = () => {
-    const [stockData, setStockData] = useState([]);
+  const [chartData, setChartData] = useState([]);
+  // const [stockData, setStockData] = useState({});
   const location = useLocation();
   const stock_symbol = location.state;
 
   // useEffect(() => {
   //   const fetchData = async () => {
   //     const stockData_url = `/api/stock/${stock_symbol}`
-
+      
   //     await axios.get(stockData_url)
   //     .then(function(response) {
   //         // console.log(response.data);
@@ -21,26 +22,26 @@ const StockDetails = () => {
   //     .catch(function(error) {
   //         console.log("실패(데이터)");
   //     })
-
-      
-  //   }  
-    // fetchData();  
+  //   }
+  //   fetchData();
   // },[]);
 
-  if (stockData.length === 0) {
-    return null;
-  } 
+  // if (chartData.length === 0) {
+  //   return null;
+  // } else if (stockData.length === 0) {
+  //   return null;
+  // }
 
   return (
-  <div className='stockDetails'>
-    <DetailHeader />
-    <div className="board">
-      <MenuBar />
-      <div className='charts'>
-        <StockChart stock_symbol={stock_symbol} />
+    <div className='stockDetails'>
+      <DetailHeader chartData={chartData}/>
+      <div className="board">
+        <MenuBar />
+        <div className='charts'>
+          <StockChart stock_symbol={stock_symbol} />
+        </div>
       </div>
     </div>
-  </div>
   )
   }
 
