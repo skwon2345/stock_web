@@ -1,6 +1,5 @@
 import React from 'react'
 import WatchList from '../WatchList'
-import StockDetails from '../StockDetails'
 import './styles.css'
 
 const Home = () => {
