@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useLocation } from 'react-router-dom'
 import {StockChart, StockChartBar} from './StockChart'
-
 import './styles.css';
 
 const StockDetails = () => {
@@ -14,7 +13,7 @@ const StockDetails = () => {
   useEffect(() => {
     const fetchData = async () => {
       const stockData_url = `/api/stock/${stock_symbol}`
-      const chart_url = `/api/candle/?symbol=${stock_symbol}&from=2020-01-01&to=2023-02-16`;
+      const chart_url = `/api/candle/?symbol=${stock_symbol}&from=2022-01-01&to=2023-02-16`;
 
       await axios.get(stockData_url)
       .then(function(response) {
@@ -49,12 +48,8 @@ const StockDetails = () => {
     <div className="board">
       <MenuBar />
       <div className='charts'>
-      <div className='mainChart'>
         <StockChart chartData={chartData}/>
-      </div>
-      <div className='subChart'>
         <StockChartBar chartData={chartData} />
-      </div>
     </div>
   </div>
 

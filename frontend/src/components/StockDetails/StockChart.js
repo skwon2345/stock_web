@@ -1,7 +1,9 @@
 import React from 'react'
 import Chart from 'react-apexcharts'
+import './styles.css'
 
 export const StockChart = ({chartData}) => {
+
     return (
         <div className='stockChart'>
             <Chart
@@ -25,65 +27,65 @@ export const StockChart = ({chartData}) => {
                 },
                 chart: {
                     type: "candlestick",
-                    height: "auto",
-                    width: "100%",
+                    height: 350,
                     id: "candles",
+                    group: "candles",
+                    background: 'grey',
                     toolbar: {
-                        autoSelected: 'pan',
-                        show: true,
+                        autoSelected: "pan",
+                        show: false,
                         },
-                    background: "rgb(67, 67, 67)",
-                    zoom: {
+                    events: {
+                        scrolled: function(chart, { xaxis }) {
+                    // ...
+                    }
+                },
+                },
+                zoom: {
                         enabled: true,
                         type: 'x',
                         autoScaleYaxis: true,
+                        resetIcon: {
+                            offsetX: -10,
+                            offsetY: 0,
+                            fillColor: '#fff',
+                            strokeColor: '#37474F'
+                        },
                         zoomedArea: {
                             fill: {
                                 color: '#90CAF9',
                                 opacity: 0.4
                             },
-                            stroke: {
-                                color: '#0D47A1',
-                                opacity: 0.4,
-                                width: 1
-                                }
                         }
                     },
-                    chart: {
-                        sparkline: {
-                            enabled: true
-                        }
+                
+                grid: {
+                    borderColor: "#555",
+                    clipMarkers: false,
+                    yaxis: {
+                    lines: {
+                        show: false
+                    }
                     }
                 },
-                
+                fill: {
+                    gradient: {
+                    enabled: true,
+                    opacityFrom: 0.55,
+                    opacityTo: 0
+                    }
+                },
                 xaxis: {
                     type: "datetime",
                     categories: chartData.map((item) => item.date),
                     labels: {
-                    style: {
-                    fontSize: '13px',
-                    colors: '#ffffff',
-                    },
-                    orientation: 'horizontal',
-                    },
-                },
-                annotations: {
-                    xaxis: [
-                    {
-                        borderColor: '#00E396',
-                        label: {
-                        borderColor: '#00E396',
                         style: {
-                            fontSize: '12px',
-                            color: '#fff',
-                            background: '#00E396'
+                            fontSize: '13px',
+                            colors: '#ffffff',
                         },
-                        orientation: 'horizontal',
-                        offsetY: 7,
-                        text: 'Annotation Test'
-                        }
-                    }
-                    ]
+                            orientation: 'horizontal',
+                        },
+                    tickPlacement: 'on'
                 },
                 yaxis: {
                     tooltip: {
@@ -107,7 +109,6 @@ export const StockChart = ({chartData}) => {
                 },
             }}
         />
-        
     </div>
     )
 }
@@ -115,7 +116,7 @@ export const StockChart = ({chartData}) => {
 
 export const StockChartBar = ({chartData}) => {
     return (
-        <div>
+        <div className="subChart">
             <Chart
             type= 'bar'
             series={[
@@ -124,7 +125,7 @@ export const StockChartBar = ({chartData}) => {
                     data: chartData?.map((item) => {
                             return [
                                 Date.parse(item.date),
-                                item.close,
+                                item.volume,
                             ]
                         })
                 }
@@ -132,21 +133,36 @@ export const StockChartBar = ({chartData}) => {
             options={{
                 chart: {
                     type: "bar",
-                    height: "100%",
+                    height: 150,
+                    width: 500,
+                    group: "candles",
+                    id: "subchart",
+                    
                     brush: {
                         enabled: true,
-                        target: 'candles'
+                        target: 'candles',
+                        autoScaleYaxis: true,
+                        
                     },
                     selection: {
                         enabled: true,
                         fill: {
-                            color: '#ccc',
-                            opacity: 0.5
+                            color: "#fff",
+                            opacity: 0.4
                         },
                         stroke: {
-                            color: '#0D47A1',
+                            color: '#64a59d',
                         }
                     },
+                },
+                grid: {
+                    borderColor: "#555",
+                    clipMarkers: false,
+                    yaxis: {
+                        lines: {
+                            show: false
+                        }
+                    }
                 },
                 dataLabels: {
                     enabled: false
@@ -154,16 +170,22 @@ export const StockChartBar = ({chartData}) => {
                 plotOptions: {
                     candlestick: {
                         colors: {
-                            upward: '#3C90EB',
-                            downward: '#DF7D46'
+                            upward: '#64a59d',
                         },
                         wick: {
                             useFillColor: true,
                         }
                     }
                 },
+                fill: {
+                    gradient: {
+                        enabled: true,
+                        opacityFrom: 0.55,
+                        opacityTo: 0
+                    }
+                },
                 stroke: {
-                    width: 0
+                        width: 2
                 },
                 xaxis: {
                     type: 'datetime',
@@ -174,7 +196,8 @@ export const StockChartBar = ({chartData}) => {
                 yaxis: {
                     labels: {
                         show: false
-                    }
+                    },
+                    tickAmoutn: 2
                 }
                 }
             }
@@ -182,17 +205,3 @@ export const StockChartBar = ({chartData}) => {
         </div>
     )
 }
-
-// series={[
-//             {
-//                 data: chartData?.map((item) => {
-//                 return [
-//                     Date.parse(item.date),
-//                     item.open,
-//                     item.high,
-//                     item.low,
-//                     item.close,
-//                 ]
-//                 })
-//             }
-//             ]}
