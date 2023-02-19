@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useLocation } from 'react-router-dom'
-import Chart from 'react-apexcharts'
+import {StockChart, StockChartBar} from './StockChart'
 
 import './styles.css';
 
@@ -43,90 +43,41 @@ const StockDetails = () => {
     return null;
   }
 
-  // console.log("--------")
-  // console.log(stockData)
-  // console.log(chartData)
-
-
-    return (
-    <div className='stockDetails'>
-      <Chart 
-        type="candlestick" 
-        series={[
-          {
-            data: chartData?.map((item) => {
-              return [
-                Date.parse(item.date),
-                item.open,
-                item.high,
-                item.low,
-                item.close,
-              ]
-            })
-          }
-        ]}
-        options={{
-            theme: {
-              mode: 'dark',
-            },
-            chart: {
-              type: "candlestick",
-              height: 350,
-              width: 500,
-              background: "rgb(67, 67, 67)",
-              zoom: {
-                enabled: true,
-                type: 'x',  
-                autoScaleYaxis: true,  
-                zoomedArea: {
-                  fill: {
-                    color: '#90CAF9',
-                    opacity: 0.4
-                  },
-                  stroke: {
-                    color: '#0D47A1',
-                    opacity: 0.4,
-                    width: 1
-                  }
-                }
-              },
-            },
-            xaxis: {
-              type: "datetime",
-              categories: chartData.map((item) => item.date),
-              labels: {
-                style: {
-                  fontSize: '13px',
-                  colors: '#ffffff',
-                },
-                orientation: 'horizontal',
-              },
-            },
-            yaxis: {
-              tooltip: {
-                enabled: true
-              },
-              forceNiceScale: true,
-              labels: {
-                style: {
-                  fontSize: '13px',
-                  colors: '#ffffff',
-                },
-            },
-            plotOptions: {
-              candlestick: {
-                  colors: {
-                      upward: '#3C90EB',
-                      downward: '#DF7D46'
-                  },
-              },
-            },
-            
-          }}
-        }
-      />
+  return (
+  <div className='stockDetails'>
+    <DetailHeader chartData={chartData}/>
+    <div className="board">
+      <MenuBar />
+      <div className='charts'>
+      <div className='mainChart'>
+        <StockChart chartData={chartData}/>
+      </div>
+      <div className='subChart'>
+        <StockChartBar chartData={chartData} />
+      </div>
     </div>
-    )
+  </div>
+
+    
+  </div>
+  )
   }
 
 export default StockDetails;
+
+const MenuBar = () => {
+  return (
+    <div className="menuBar">
+      Menu Bar
+    </div>
+  )
+}
+
+const DetailHeader = ({chartData}) => {
+  //stockData로 변경 !!!!
+  return (
+    <div className="header">
+      ZM
+    </div>
+  )
+}
