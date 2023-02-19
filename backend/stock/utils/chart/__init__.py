@@ -22,6 +22,8 @@ class Chart:
         self.uptrend = []
         self.downtrend = []
 
+        self.vertices = []
+
         self.data = self._process(self.symbol)
 
         self.f.indices_const()
@@ -168,8 +170,23 @@ class Chart:
         for i in range(len(trend_list) - 1):
             if trend_list[i][1] > trend_list[i + 1][1]:
                 downtrend.append(dict([trend_list[i], trend_list[i + 1]]))
+                if i == 0:
+                    self.vertices.append(
+                        (trend_list[i][0], trend_list[i][1], "uptrend")
+                    )
+                self.vertices.append(
+                    (trend_list[i + 1][0], trend_list[i + 1][1], "downtrend")
+                )
             else:
                 uptrend.append(dict([trend_list[i], trend_list[i + 1]]))
+                uptrend.append(dict([trend_list[i], trend_list[i + 1]]))
+                if i == 0:
+                    self.vertices.append(
+                        (trend_list[i][0], trend_list[i][1], "downtrend")
+                    )
+                self.vertices.append(
+                    (trend_list[i + 1][0], trend_list[i + 1][1], "uptrend")
+                )
 
         self.uptrend = uptrend
         self.downtrend = downtrend
@@ -202,6 +219,91 @@ class Chart:
 
             if d.get("trend") is None:
                 d["trend"] = "undefined"
+
+    def _calc_fib_retr(self, minimum_diff_ratio: float) -> list:
+        def getFibRET(start, end):
+            start_price = start[1]
+            end_price = end[1]
+
+            diff = start_price - end_price
+            return {
+                "start": start,
+                "end": end,
+                "fib": {
+                    "-1.618": end_price + (diff * -1.618),
+                    "-1.382": end_price + (diff * -1.382),
+                    "-1.236": end_price + (diff * -1.236),
+                    "-0.886": end_price + (diff * -0.886),
+                    "-0.786": end_price + (diff * -0.786),
+                    "-0.618": end_price + (diff * -0.618),
+                    "-0.5": end_price + (diff * -0.5),
+                    "-0.382": end_price + (diff * -0.382),
+                    "-0.236": end_price + (diff * -0.236),
+                    "0.236": end_price + (diff * 0.236),
+                    "0.382": end_price + (diff * 0.382),
+                    "0.5": end_price + (diff * 0.5),
+                    "0.618": end_price + (diff * 0.618),
+                    "0.786": end_price + (diff * 0.786),
+                    "0.886": end_price + (diff * 0.886),
+                    "1.236": end_price + (diff * 1.236),
+                    "1.382": end_price + (diff * 1.382),
+                    "1.618": end_price + (diff * 1.618),
+                },
+            }
+
+        ret = []
+        for i in range(len(self.vertices)):
+            for j in range(len(self.vertices)):
+                if j <= i:
+                    continue
+                vertex_one = self.vertices[i]
+                vertex_two = self.vertices[j]
+
+                if (
+                    vertex_one[2] != vertex_two[2]
+                    and (
+                        abs(vertex_one[1] - vertex_two[1])
+                        / max([vertex_one[1], vertex_two[1]])
+                    )
+                    > minimum_diff_ratio
+                ):
+                    if (
+                        vertex_one[2] == "uptrend"
+                        and (vertex_one[1] > vertex_two[1])
+                    ) or (
+                        vertex_one[2] == "downtrend"
+                        and (vertex_one[1] < vertex_two[1])
+                    ):
+                        ret.append(getFibRET(vertex_one, vertex_two))
+
+        return ret
+
+    def _count_overlapping(
+        self, fib_list: list, overlap_ratio: float, show_overlap_only: bool
+    ):
+        def is_overlapped(p1: float, p2: float) -> bool:
+            return (abs(p1 - p2) / max([p1, p2])) < overlap_ratio
+
+        for fib_dict in fib_list:
+            fib = fib_dict["fib"]
+            count = 0
+            new_fib = {}
+            for vertex in self.vertices:
+                for k, v in fib.items():
+                    if is_overlapped(v, vertex[1]):
+                        new_fib[k] = v
+                        count += 1
+
+            fib_dict["overlap_cnt"] = count
+            if show_overlap_only:
+                fib_dict["fib"] = new_fib
+
+    def _get_most_overlapped_fib_ret(self, fib_list: list) -> dict:
+        self._count_overlapping(
+            fib_list=fib_list, overlap_ratio=0.003, show_overlap_only=True
+        )
+
+        return max(fib_list, key=lambda x: x["overlap_cnt"])
 
     def _process(self, symbol: str) -> list:
         # TODO: Check <= 14 or < 14
