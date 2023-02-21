@@ -11,7 +11,7 @@ import axios from 'axios';
 import './styles.css'
 
 export const StockChart =({stock_symbol}) => {
-    const dataURL = `/api/candle/?symbol=${stock_symbol}&from=2003-01-01&to=2023-02-20`
+    const dataURL = `/api/candle/?symbol=${stock_symbol}&from=1900-01-01&to=2023-02-20`
     const [options, setOptions] = useState({
         ...chartOptions,
         chart: {
@@ -23,11 +23,17 @@ export const StockChart =({stock_symbol}) => {
                 afterSetExtremes
             },
             minRange: 3600 * 1000 // one hour
-        }
+        },
+        title: {
+            text: stock_symbol,
+            style : {
+                color: "#ffffff",
+            }
+        },
+
     })
     const loadInitialData = async () => {
         if (options.hasOwnProperty("series")) {
-            console.log(options.series[0])
             return
         } else {
             var ohlc =[]
@@ -51,6 +57,7 @@ export const StockChart =({stock_symbol}) => {
                         dataGrouping: {
                             enabled: false
                         },
+                        name: 'candlestick',
                         type: "candlestick"
                     },
                     {   
@@ -63,13 +70,6 @@ export const StockChart =({stock_symbol}) => {
             })
         }
     };
-    Highcharts.theme = {
-        colors: ['#2b908f', '#90ee7e', '#f45b5b', '#7798BF', '#aaeeee', '#ff0066',
-            '#eeaaee', '#55BF3B', '#DF5353', '#7798BF', '#aaeeee'
-        ],
-    }
-    Highcharts.setOptions(Highcharts.theme);
-    
 
     Indicators(Highcharts);
     DragPanes(Highcharts);
@@ -84,30 +84,31 @@ export const StockChart =({stock_symbol}) => {
         var url = null;
 
         if (e.hasOwnProperty("rangeSelectorButton")) {
-            // const endDateObj = new Date();
-            // const startDateObj = new Date();
-            // startDateObj.setDate(startDateObj.getDate()- ((e.rangeSelectorButton.text === "1m") ? 31 : 365));
+            const endDateObj = new Date();
+            const startDateObj = new Date();
+            startDateObj.setDate(startDateObj.getDate()- ((e.rangeSelectorButton.text === "1m") ? 31 : 365));
 
-            // const endDate = `${endDateObj.getFullYear()}-${endDateObj.getMonth()+1}-${endDateObj.getDate()}`;
-            // const startDate = `${startDateObj.getFullYear()}-${startDateObj.getMonth()+1}-${startDateObj.getDate()}`;
+            const endDate = `${endDateObj.getFullYear()}-${endDateObj.getMonth()+1}-${endDateObj.getDate()}`;
+            const startDate = `${startDateObj.getFullYear()}-${startDateObj.getMonth()+1}-${startDateObj.getDate()}`;
 
-            // console.log(endDate)
-            // console.log(startDate)
+            console.log(endDate)
+            console.log(startDate)
             url = `${dataURL}?start=${Math.round(e.min)}&end=${Math.round(e.max)}`
 
             axios.get(url)
             .then(function(response) {
-                console.log(response.data)
                 const ohlc = []
                 response.data.map((item) =>
                     ohlc.push([Date.parse(item.date), item.open, item.high, item.low, item.close]))
                 chart.series[0].setData(ohlc);
+                console.log(options.series[0])
                 chart.hideLoading();
             })
             .catch(error =>  console.log(error));
 
 
-        } else {
+        } 
+        else {
             if (options.hasOwnProperty("series")) {
                 chart.showLoading('Loading data from server...');    
             }
@@ -131,6 +132,22 @@ const chartOptions = {
                 color: 'red',
                 upColor: 'green'
             },
+            series: {
+                allowPointSelect: true,
+                marker: {
+                    enabled: true,
+                    states: {
+                        hover: {
+                        enabled: true
+                        },
+                        select: {
+                            enabled: true,
+                            radius: 5
+                        }
+                    }
+                },
+            }
+                
         },
         chart: {
             type:"candlestick",
@@ -165,22 +182,20 @@ const chartOptions = {
                 count: 1,
                 text: "1y"
             },
+            // {
+            //     type: "year",
+            //     count: 3,
+            //     text: "3y"
+            // },
             {
                 type: "all",
                 text: "All"
             }
             ],
-            inputEnabled: false, 
+            allButtonsEnabled: true,
             selected: 3,
+            enabled: true,
         },
-
-        title: {
-            text: 'AAPL Historical',
-            style : {
-                color: "#ffffff",
-            }
-        },
-
         yAxis: [
                 {
                     labels: {
@@ -194,7 +209,9 @@ const chartOptions = {
                     lineWidth: 2,
                     resize: {
                         enabled: true
-                    }
+                    },
+                    gridLineColor: '#ffffff',
+                    gridLineWidth: 1,
                 },
                 {
                     labels: {
