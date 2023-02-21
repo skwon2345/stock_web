@@ -2,10 +2,14 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useLocation } from 'react-router-dom'
 import { StockChart } from './StockChart'
+import { Tab, Tabs } from 'react-bootstrap';
+
+import "bootstrap/dist/css/bootstrap.min.css";
 import './styles.css';
 
 const StockDetails = () => {
   const [stockData, setStockData] = useState({});
+  const [key, setKey] = useState("chart");
   const location = useLocation();
   const stock_symbol = location.state;
 
@@ -29,19 +33,6 @@ const StockDetails = () => {
     return null;
   }
 
-    const MenuBar = () => {
-    return (
-      <div className="menuBar">
-        <ul>
-          <li>Chart</li>
-          <li>Financial Statement</li>
-          <li>Insider trade</li>
-          <li>News</li>
-        </ul>
-      </div>
-    )
-  }
-
   const DetailHeader = ({stockData}) => {
     //stockData로 변경 !!!!
     return (
@@ -51,12 +42,28 @@ const StockDetails = () => {
     )
   }
 
+  const FinancialStatement = () => {
+    return (
+      <div>
+        Financial statement
+      </div>
+    )
+  }
+
 
   return (
     <div className='stockDetails'>
       <DetailHeader stockData={stockData}/>
       <div className="board">
-        <MenuBar />
+        <div className="menuBar">
+          <Tabs>
+            defaultActiveKey="/chart" as="ul">
+            <Tab eventKey="chart" title="chart"></Tab>
+            <Tab eventKey="chart" title="chart"><FinancialStatement /></Tab>
+            <Tab eventKey="chart" title="chart">fff</Tab>
+            <Tab eventKey="chart" title="chart">ggg</Tab>
+          </Tabs>
+        </div>
         <div className='chart'>
           <StockChart stock_symbol={stock_symbol} />
         </div>
