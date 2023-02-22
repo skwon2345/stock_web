@@ -10,43 +10,38 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-}
-
-.stockDetails {
   background-color: grey;
-  color: white;
 }
 
 .menuBar {
-  display: flex;
-  flex-direction: row;
-  justify-content: center;
-  align-items: center;
-  height: 50px;
-  width: 100%;
-  border: 4px solid grey;
-  border-top-left-radius: 10px;
+  width: 70%;
 }
 
-.charts {
+.menuBar > ul {
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
+  justify-content: space-between;
   align-items: center;
-  border: 2px solid black;
+  height: 60px;
+  width: 100%;
+  padding: 15px;
+  color: rgb(199, 199, 199);
 }
+
+.menuBar > li {
+  cursor: pointer;
+}
+
 .board {
-  width: 90%;
+  width: 95%;
   display: flex;
   flex-direction: column;
   align-items: center;
-  background-color: rgb(167, 167, 167);
+  background-color: #242526;
   border-radius: 10px;
 }
 
 .stockChart {
-  width: 900px;
-}
-
-.subChart {
-  width: 500px;
+  height: 900px;
+  width: 100%;
 }
