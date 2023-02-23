@@ -129,7 +129,7 @@ class CandleList(generics.RetrieveAPIView):
             to_date + " 00:00:00",
             data_dict,
         )
-        fig = chart.get_chart(bool(trend), int(window))
+        fig = chart.get_chart(bool(int(trend)), int(window))
 
         return Response(fig.to_dict())
 
