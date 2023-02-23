@@ -1,5 +1,6 @@
 from datetime import date, datetime, timedelta
 
+import plotly.graph_objects as go
 import yfinance as yf
 from django.forms.models import model_to_dict
 from django.http import Http404
@@ -53,16 +54,16 @@ class StockList(generics.ListAPIView):
     # permission_classes = [IsAdminUser]
 
 
-class CandleList(generics.ListAPIView):
+class CandleList(generics.RetrieveAPIView):
     serializer_class = CandleSerializer
     # permission_classes = [IsAdminUser]
 
-    def get_queryset(self):
+    def retrieve(self, request, *args, **kwargs):
         """
         This view should return a list of all the purchases
         for the currently authenticated user.
         """
-
+        # symbol = self.kwargs.get("symbol")
         symbol = self.request.query_params.get("symbol", None)
         from_date = self.request.query_params.get("from", None)
         to_date = self.request.query_params.get("to", None)
@@ -93,12 +94,44 @@ class CandleList(generics.ListAPIView):
                 date.today().strftime("%Y-%m-%d %H:%M:%S"),
             )
 
-        return (
+        queryset = (
             Candle.objects.filter(symbol=symbol)
             .filter(date__gte=from_date)
             .filter(date__lte=to_date)
             .order_by("date")
         )
+
+        serializer = self.get_serializer(queryset, many=True)
+
+        data_list = list(serializer.data)
+
+        dates = []
+        open = []
+        high = []
+        low = []
+        close = []
+
+        for data in data_list:
+            dates.append(data["date"])
+            open.append(data["open"])
+            high.append(data["high"])
+            low.append(data["low"])
+            close.append(data["close"])
+
+        fig = go.Figure(
+            data=[
+                go.Candlestick(
+                    x=dates,
+                    open=open,
+                    high=high,
+                    low=low,
+                    close=close,
+                    showlegend=False,
+                )
+            ],
+        )
+
+        return Response(fig.to_dict())
 
     def create_candles(
         self,
