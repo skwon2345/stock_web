@@ -6,55 +6,29 @@ import './styles.css'
 
 export const StockChart =({stock_symbol}) => {
     const [data, setData] = useState([]);
+    const [layout, setLayout] = useState([]);
+    const [isLoading, setLoading] = useState(true);
     const dataURL = `/api/candle/?symbol=${stock_symbol}&from=1900-01-01&to=2023-02-20`
 
     useEffect(() => {
         const initialValue = async () => {
             await axios.get(dataURL)
                 .then(function(response) {
-                    var trace = {
-                        x: [],
-                        close: [],
-                        high: [],
-                        low: [],
-                        open: [],
-                        line: {color: 'rgba(31,119,180,1)'}, 
-                        decreasing: {line: {color: '#7F7F7F'}}, 
-                        increasing: {line: {color: '#17BECF'}},
-                        type: 'candlestick',
-                        yaxis: 'y',
-                        xaxis: 'x',
-                    }
-                    var volume = {
-                        x: [],
-                        y: [],
-                        type: 'bar',
-                        line: {color: 'grey'},
-                        yaxis: 'y',
-                        xaxis: 'x',
-                    }
-                response.data.map((item) => {
-                    trace.x.push(JSON.stringify(Date.parse(item.date)))
-                    trace.close.push(JSON.stringify(item.close))
-                    trace.high.push(JSON.stringify(item.high))
-                    trace.low.push(JSON.stringify(item.low))
-                    trace.open.push(JSON.stringify(item.open))
-                    volume.x.push(JSON.stringify(Date.parse(item.date)))
-                    volume.y.push(item.volume)
-                })
-                setData([trace,volume])
-        // console.log(volume)
-
+                response.data.layout.template.layout.yaxis.gridcolor= "none"
+                response.data.layout.template.layout.xaxis.gridcolor= "none"
+                setData(response.data.data)
+                setLayout(layout=> ({
+                    ...layoutOptions,
+                    ...response.data.layout
+                }))
+            setLoading(false);
             })
         }
         initialValue();
     }, [])
-    
 
-    const config= {
-        autoscale:true,
-        autosize: true,
-        responsive: true,
+    if(isLoading) {
+        return null;
     }
 
     return (
@@ -62,6 +36,12 @@ export const StockChart =({stock_symbol}) => {
             <Plot data={data} layout={layout} config={config}/>
         </div>
     )
+}
+
+const config= {
+    autoscale:true,
+    autosize: true,
+    responsive: true,
 }
 
 var selectorOptions = {
@@ -91,18 +71,15 @@ var selectorOptions = {
     selected: 2
 };
 
-const layout = {
-    font: {size: 13},
+const layoutOptions = {
+    font: {size: 13, color: "#c7c7c7"},
     width: 1100,
-    height: 780,
+    height: 880,
     xaxis: {
         autorange: true, 
         showgrid: true,
-        // rangeslider: {range: ['2020-01-03 12:00', '2020-12-03 12:00']}, 
         type: 'date',
         rangeselector: selectorOptions,
-        rangeslider: {},
-        
     }, 
     yaxis: {
             autorange: true, 
