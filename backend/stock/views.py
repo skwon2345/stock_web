@@ -1,6 +1,5 @@
 from datetime import date, datetime, timedelta
 
-import plotly.graph_objects as go
 import yfinance as yf
 from django.forms.models import model_to_dict
 from django.http import Http404
@@ -67,6 +66,8 @@ class CandleList(generics.RetrieveAPIView):
         symbol = self.request.query_params.get("symbol", None)
         from_date = self.request.query_params.get("from", None)
         to_date = self.request.query_params.get("to", None)
+        trend = self.request.query_params.get("trend", 0)
+        window = self.request.query_params.get("window", 0)
 
         if not all([symbol, from_date, to_date]):
             raise
@@ -105,31 +106,30 @@ class CandleList(generics.RetrieveAPIView):
 
         data_list = list(serializer.data)
 
-        dates = []
-        open = []
-        high = []
-        low = []
-        close = []
+        data_dict = {"o": [], "h": [], "l": [], "c": [], "v": [], "t": []}
 
         for data in data_list:
-            dates.append(data["date"])
-            open.append(data["open"])
-            high.append(data["high"])
-            low.append(data["low"])
-            close.append(data["close"])
-
-        fig = go.Figure(
-            data=[
-                go.Candlestick(
-                    x=dates,
-                    open=open,
-                    high=high,
-                    low=low,
-                    close=close,
-                    showlegend=False,
+            data_dict["t"].append(
+                int(
+                    datetime.timestamp(
+                        datetime.strptime(data["date"], "%Y-%m-%d")
+                    )
                 )
-            ],
+            )
+            data_dict["o"].append(data["open"])
+            data_dict["h"].append(data["high"])
+            data_dict["l"].append(data["low"])
+            data_dict["c"].append(data["close"])
+            data_dict["v"].append(data["volume"])
+
+        chart = Chart(
+            symbol,
+            "D",
+            from_date + " 00:00:00",
+            to_date + " 00:00:00",
+            data_dict,
         )
+        fig = chart.get_chart(bool(trend), int(window))
 
         return Response(fig.to_dict())
 

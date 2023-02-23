@@ -2,11 +2,12 @@ from datetime import datetime
 from time import gmtime, mktime
 
 import finnhub
+import plotly.graph_objects as go
 from django.conf import settings
 
 
 class Chart:
-    def __init__(self, symbol, resolution, start_date, end_date):
+    def __init__(self, symbol, resolution, start_date, end_date, data=None):
         # TODO: Try one stock library: yfinance or finnhub?
         self.f = finnhub.Client(api_key=settings.FINNHUB_API_KEY)
 
@@ -24,7 +25,7 @@ class Chart:
 
         self.vertices = []
 
-        self.data = self._process(self.symbol)
+        self.data = self._process(self.symbol, data)
 
         self.f.indices_const()
 
@@ -305,24 +306,78 @@ class Chart:
 
         return max(fib_list, key=lambda x: x["overlap_cnt"])
 
-    def _process(self, symbol: str) -> list:
-        # TODO: Check <= 14 or < 14
-        if (self.end_timestamp - self.start_timestamp) / 86400 <= 14:
-            data = self.f.stock_candles(
-                symbol=symbol,
-                resolution=self.resolution,
-                _from=self.start_timestamp,
-                to=self.end_timestamp,
-            )
+    def get_chart(self, trend: bool = False, window: int = 20) -> go.Figure():
+        date = []
+        open = []
+        high = []
+        low = []
+        close = []
+
+        for data in self.data:
+            date.append(data["Date"])
+            open.append(data["Candle"]["Open"])
+            high.append(data["Candle"]["High"])
+            low.append(data["Candle"]["Low"])
+            close.append(data["Candle"]["Close"])
+
+        fig = go.Figure(
+            data=[
+                go.Candlestick(
+                    x=date,
+                    open=open,
+                    high=high,
+                    low=low,
+                    close=close,
+                    showlegend=False,
+                )
+            ],
+        )
+
+        if not trend:
+            return fig
         else:
-            data = self.f.technical_indicator(
-                symbol=symbol,
-                resolution=self.resolution,
-                _from=self.start_timestamp,
-                to=self.end_timestamp,
-                indicator="rsi",
-                indicator_fields={"timeperiod": 14},
-            )
+            self.set_trend(window=window)
+            for uptrend in self.uptrend:
+                fig.add_trace(
+                    go.Scatter(
+                        x=list(uptrend.keys()),
+                        y=list(uptrend.values()),
+                        mode="lines",
+                        line=go.scatter.Line(color="green", width=2),
+                        showlegend=False,
+                    )
+                )
+            for downtrend in self.downtrend:
+                fig.add_trace(
+                    go.Scatter(
+                        x=list(downtrend.keys()),
+                        y=list(downtrend.values()),
+                        mode="lines",
+                        line=go.scatter.Line(color="red", width=2),
+                        showlegend=False,
+                    )
+                )
+            return fig
+
+    def _process(self, symbol: str, data: dict) -> list:
+        # TODO: Check <= 14 or < 14
+        if not data:
+            if (self.end_timestamp - self.start_timestamp) / 86400 <= 14:
+                data = self.f.stock_candles(
+                    symbol=symbol,
+                    resolution=self.resolution,
+                    _from=self.start_timestamp,
+                    to=self.end_timestamp,
+                )
+            else:
+                data = self.f.technical_indicator(
+                    symbol=symbol,
+                    resolution=self.resolution,
+                    _from=self.start_timestamp,
+                    to=self.end_timestamp,
+                    indicator="rsi",
+                    indicator_fields={"timeperiod": 14},
+                )
 
         data = self._format(data)
 
