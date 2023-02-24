@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useLocation } from 'react-router-dom'
 import { StockChart } from './StockChart'
+import { ChakraProvider } from '@chakra-ui/react'
+
 import './styles.css';
 
 const StockDetails = () => {
@@ -54,18 +56,33 @@ const StockDetails = () => {
 
   return (
     <div className='stockDetails'>
-      <DetailHeader stockData={stockData}/>
-      <div className="board">
-        <MenuBar />
-        <div className='chart'>
-          <StockChart stock_symbol={stock_symbol} />
+      <ChakraProvider>
+        <DetailHeader stockData={stockData}/>
+        <div className="board">
+          <MenuBar />
+          <div className='chart'>
+            <StockChart stock_symbol={stock_symbol} />
+          </div>
         </div>
-      </div>
+      </ChakraProvider>
     </div>
   )
+}
 
+export default StockDetails;
+
+const showChart = () => {
 
 }
 
+const showFinancialStatement = () => {
 
-export default StockDetails;
+}
+
+const showInsiderTrade = () => {
+
+}
+
+const showNews = () => {
+  
+}

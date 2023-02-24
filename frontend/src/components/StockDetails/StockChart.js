@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from "react";
 import axios from 'axios';
 import Plot from 'react-plotly.js';
+import { Modal, ModalOverlay,ModalContent, ModalHeader, ModalFooter, ModalBody, ModalCloseButton, Button, Checkbox, Table, Tr, Th, Thead, Tbody, Td } from '@chakra-ui/react'
+import { ViewIcon, ViewOffIcon ,AddIcon } from '@chakra-ui/icons'
+import { useDisclosure } from '@chakra-ui/react'
 import './styles.css'
 
 
@@ -8,7 +11,15 @@ export const StockChart =({stock_symbol}) => {
     const [data, setData] = useState([]);
     const [layout, setLayout] = useState([]);
     const [isLoading, setLoading] = useState(true);
-    const dataURL = `/api/candle/?symbol=${stock_symbol}&from=1900-01-01&to=2023-02-20`
+    const [showTrend, setTrend] = useState({
+        indicator: "Trend Line",
+        show: true,
+        windowSize: 20,
+        eye: true,
+    })
+    const { isOpen, onOpen, onClose } = useDisclosure()
+
+    const dataURL = `/api/candle/?symbol=${stock_symbol}&from=1900-01-01&to=2023-02-20&trend=${showTrend.show === true ? 1 : 0}&window=${showTrend.windowSize}`
 
     useEffect(() => {
         const initialValue = async () => {
@@ -25,18 +36,74 @@ export const StockChart =({stock_symbol}) => {
             })
         }
         initialValue();
-    }, [])
+    }, [dataURL])
 
     if(isLoading) {
         return null;
     }
 
+    const handleChange = () => {
+        setTrend(prev => ({...showTrend, show: !showTrend.show}))
+    }
+    
+    const toggleEye = () => {
+        setTrend(prev => ({...showTrend, eye: !showTrend.eye, show: !showTrend.show}))
+    }
+
     return (
         <div className="stockChart">
             <Plot data={data} layout={layout} config={config}/>
+            <div className="trendModal" >
+                <Button  className="trendModalButton" variant="contained" color="grey" size="sm" onClick={onOpen}> <AddIcon pr="3px"/> Indicators </Button>
+                <ShowModal showTrend={showTrend} setTrend={setTrend} handleChange={handleChange} isOpen={isOpen} onClose={onClose}/>
+                {showTrend.show || showTrend.eye === true 
+                    ? <div className="indicatorList"> 
+                        {showTrend.indicator} : {showTrend.windowSize} 
+                        <p className="eye" onClick={handleChange}>{showTrend.show && showTrend.eye ? <ViewIcon onClick={toggleEye} pb="2px" boxSize={5}/> : <ViewOffIcon onClick={toggleEye} pb="2px" boxSize={5} /> }</p>
+                    </div>
+                    : null 
+                }
+            </div>
         </div>
     )
 }
+
+const ShowModal = ({ showTrend, setTrend, handleChange, isOpen, onClose }) => {
+        return (
+            <Modal className="modal" isOpen={isOpen} onClose={onClose} isCentered size="xl">
+                <ModalOverlay />
+                <ModalContent>
+                    <ModalHeader>Indicators</ModalHeader>
+                    <hr />
+                    <ModalCloseButton />
+                    <ModalBody>
+                            <Table> 
+                                <Thead>
+                                    <Tr>
+                                        <Th>Indicator</Th>
+                                        <Th>Window size</Th>
+                                    </Tr>
+                                </Thead>
+                                <Tbody>
+                                    <Td>Trend line <Checkbox size="lg" defaultChecked={(showTrend.show).toString()} ischecked={(!showTrend.show).toString()} onChange={handleChange}/> </Td>
+                                    <Td>
+                                        <div>
+                                            <input type="number" required className="windowSize" disabled={!showTrend.show} value={showTrend.windowSize} onChange={e => setTrend(prev => ({...showTrend, windowSize: e.target.value}))}/>
+                                            <label> (1-100) </label> 
+                                        </div>
+                                    </Td>
+                                </Tbody>
+                            </Table>
+                    </ModalBody>
+                    <ModalFooter>
+                        <Button borderRadius={10} mr={3} onClick={onClose}>
+                        Save
+                        </Button>
+                    </ModalFooter>
+                </ModalContent>
+            </Modal>
+            )
+    }
 
 const config= {
     autoscale:true,
