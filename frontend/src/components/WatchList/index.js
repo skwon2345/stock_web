@@ -8,7 +8,7 @@ const WatchList = () => {
 
     useEffect(() => {
         async function fetchStockData()  {
-            const url = "/api/stock/";
+            const url = "http://127.0.0.1:8000/api/stock/";
             await axios.get(url)
             .then(function(response) {
                 // console.log(response.data);
@@ -27,7 +27,6 @@ const WatchList = () => {
 
     return (
         <div className='watchlist'>
-
             <ul>
                 {stockData.map((stock, index) => {
                     return (

@@ -1,5 +1,6 @@
-import { Header, Home, StockDetails } from './components';
-import { Routes, Route } from "react-router-dom";
+import { Header, Home,  } from './components';
+import { Routes, Route} from "react-router-dom";
+import { FinancialStatement, InsiderTrade, News, StockDetails } from './components/StockDetails';
 
 function App() {
   return (

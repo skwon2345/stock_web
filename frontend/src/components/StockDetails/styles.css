@@ -47,7 +47,7 @@
   position: relative;
 }
 
-.trendModal {
+/* .trendModal {
   font-size: 0.9em;
   position: absolute;
   display: flex;
@@ -57,7 +57,7 @@
   right: 11%;
   padding: 0px 5px;
   color: #242526;
-}
+} */
 
 .trendModalButton {
   cursor: pointer;
@@ -79,21 +79,50 @@
 .windowSize {
   border: 1px solid #848484;
   border-radius: 5px;
+  text-align: center;
   width: 80px;
   margin-right: 30px;
 }
 
 .indicatorList {
+  position: absolute;
+  top: 13.1%;
+  right: 10%;
   display: flex;
   justify-content: space-evenly;
-  align-items: baseline;
-  margin-top: 20px;
+  align-items: center;
   background-color: rgb(167, 167, 167);
-  width: 150px;
-  padding: 2px 0px 2px 8px;
-  border-radius: 5px;
+  width: 180px;
+  padding-left: 7px;
+  border-radius: 3px;
+  font-size: 0.9em;
 }
 
 .eye {
   cursor: pointer;
+}
+
+.edit {
+  cursor: pointer;
+}
+
+.icons {
+  display: flex;
+  justify-content: space-between;
+  width: 44px;
+}
+
+.financialStatement {
+  color: white;
+  font-size: 1em;
+}
+
+.insiderTrade {
+  color: white;
+  font-size: 1em;
+}
+
+.news {
+  color: white;
+  font-size: 1em;
 }

@@ -1,19 +1,19 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { useLocation } from 'react-router-dom'
+import { useLocation, NavLink, Routes, Route  } from 'react-router-dom'
 import { StockChart } from './StockChart'
 import { ChakraProvider } from '@chakra-ui/react'
 
 import './styles.css';
 
-const StockDetails = () => {
+export const StockDetails = () => {
   const [stockData, setStockData] = useState({});
-  const location = useLocation();
-  const stock_symbol = location.state;
+  const stock_symbol = useLocation().state;
+  const [active, setActive] = useState("chart")
 
   useEffect(() => {
     const fetchData = async () => {
-      const stockData_url = `/api/stock/${stock_symbol}`
+      const stockData_url = `http://127.0.0.1:8000/api/stock/${stock_symbol}`
       
       await axios.get(stockData_url)
       .then(function(response) {
@@ -31,19 +31,6 @@ const StockDetails = () => {
     return null;
   }
 
-    const MenuBar = () => {
-    return (
-      <div className="menuBar">
-        <ul>
-          <li>Chart</li>
-          <li>Financial Statement</li>
-          <li>Insider trade</li>
-          <li>News</li>
-        </ul>
-      </div>
-    )
-  }
-
   const DetailHeader = ({stockData}) => {
     //stockData로 변경 !!!!
     return (
@@ -53,15 +40,24 @@ const StockDetails = () => {
     )
   }
 
-
   return (
     <div className='stockDetails'>
       <ChakraProvider>
         <DetailHeader stockData={stockData}/>
         <div className="board">
-          <MenuBar />
-          <div className='chart'>
-            <StockChart stock_symbol={stock_symbol} />
+          <div className="menuBar">
+            <ul>
+                <li onClick={() => setActive("chart")}>Chart</li>
+                <li onClick={() => setActive("finance")}>Finance</li>
+                <li onClick={() => setActive("insider")}>Insider</li>
+                <li onClick={() => setActive("news")}>News</li>
+            </ul>
+          </div>
+          <div>
+          {active === "chart" &&  <Chart />}
+          {active === "finance" &&  <FinancialStatement />}
+          {active === "insider" &&  <InsiderTrade />}
+          {active === "news" &&  <News />}
           </div>
         </div>
       </ChakraProvider>
@@ -69,20 +65,41 @@ const StockDetails = () => {
   )
 }
 
-export default StockDetails;
+export const Chart = () => {
+    const location = useLocation();
+    const stock_symbol = location.state;
+    return(
+      <div className="chart">
+        <StockChart stock_symbol={stock_symbol} />
+      </div>
+    )
+  }
 
-const showChart = () => {
-
+export const FinancialStatement = () => {
+  const stock_symbol = useLocation().state;
+  return (
+    <div className='financialStatement'>
+      {stock_symbol} financial statement
+    </div>
+  )
 }
 
-const showFinancialStatement = () => {
+export const InsiderTrade = () => {
+  const stock_symbol = useLocation().state;
 
+  return (
+    <div className='insiderTrade'>
+      InsiderTrade {stock_symbol}
+    </div>
+  )
 }
 
-const showInsiderTrade = () => {
+export const News = () => {
+  const stock_symbol = useLocation().state;
 
-}
-
-const showNews = () => {
-  
+  return (
+    <div className='news'>
+      News {stock_symbol}
+    </div>
+  )
 }
