@@ -1,81 +1,110 @@
 import React, { useState, useEffect } from "react";
 import axios from 'axios';
 import Plot from 'react-plotly.js';
-import { Modal, ModalOverlay,ModalContent, ModalHeader, ModalFooter, ModalBody, ModalCloseButton, Button, Checkbox, Table, Tr, Th, Thead, Tbody, Td } from '@chakra-ui/react'
+import { Modal, ModalOverlay,ModalContent, ModalHeader, ModalFooter, ModalBody, ModalCloseButton, Button, Table, Tr, Th, Thead, Tbody, Td, CircularProgress } from '@chakra-ui/react'
 import { ViewIcon, ViewOffIcon ,EditIcon } from '@chakra-ui/icons'
 import { useDisclosure } from '@chakra-ui/react'
 import './styles.css'
 
 
-export const StockChart =({stock_symbol}) => {
-    const [data, setData] = useState([]);
+export const StockChart =({stock_symbol, isLoading, setLoading}) => {
+    const [data, setData] = useState(() => localStorage.getItem('chartData') ? JSON.parse(localStorage.getItem('chartData')) : null);
     const [layout, setLayout] = useState([]);
-    const [isLoading, setLoading] = useState(true);
-    const [showTrend, setTrend] = useState({
+    const [showIndicator, setIndicator] = useState({
         indicator: "Trend Line",
         show: true,
         windowSize: 20,
-        eye: true,
     })
     const { isOpen, onOpen, onClose } = useDisclosure()
+    const lastDate = new Date();
+    var dateString = new Date(lastDate.getTime() - (lastDate.getTimezoneOffset() * 60000 ))
+                .toISOString()
+                .split("T")[0];
+    // const indicatorStorage = JSON.parse(localStorage.getItem('indicator'))
+    const dataURL = `http://127.0.0.1:8000/api/candle/?symbol=${stock_symbol}&from=1900-01-01&to=${dateString}&trend=${showIndicator.show === true ? 1 : 0}&window=${showIndicator.windowSize}`
+    const storageArr = []
 
-    const dataURL = `http://127.0.0.1:8000/api/candle/?symbol=${stock_symbol}&from=1900-01-01&to=2023-02-20&trend=${showTrend.show === true ? 1 : 0}&window=${showTrend.windowSize}`
-
-    useEffect(() => {
-        const initialValue = async () => {
-            await axios.get(dataURL)
-                .then(function(response) {
-                response.data.layout.template.layout.yaxis.gridcolor= "#3B3B3B"
-                response.data.layout.template.layout.xaxis.gridcolor= "none"
-                setData(response.data.data)
-                setLayout(layout=> ({
+    const initialValue = async () => {
+        setLoading(true)
+        await axios.get(dataURL)
+            .then(function(response) {
+            response.data.layout.template.layout.yaxis.gridcolor= "#3B3B3B"
+            response.data.layout.template.layout.xaxis.gridcolor= "none"
+            response.data.layout.template.layout.displayModeBar= "false"
+            setData(response.data.data)
+            setLayout(layout=> ({
                     ...layoutOptions,
                     ...response.data.layout
                 }))
-            setLoading(false);
-            })
-        }
-        initialValue();
-    }, [dataURL])
-
-    if(isLoading) {
-        return null;
+            localStorage.setItem('chartData', JSON.stringify(response.data.data))
+            localStorage.setItem('chartLayout', JSON.stringify(response.data.layout.template))
+        // console.log("fetch")
+        setLoading(false);
+        })
     }
+
+    useEffect(() => {
+        var lastIndex = data[0].x.length
+        setLoading(true);
+        // if (!data || data[0].x[lastIndex - 1] !== `${dateString} 00:00:00`) {
+            initialValue();
+        // }
+        // if (indicatorStorage) {
+        //     setIndicator(prev => ({...showIndicator, show: indicatorStorage.show, windowSize: indicatorStorage.windowSize }))
+        // } 
+        // localStorage.setItem('indicator', JSON.stringify(showIndicator))
+        setLoading(false)
+    }, [dataURL, showIndicator])
 
     const handleChange = () => {
-        setTrend(prev => ({...showTrend, show: !showTrend.show}))
-    }
-    
-    const toggleEye = () => {
-        setTrend(prev => ({...showTrend, eye: !showTrend.eye, show: !showTrend.show}))
+        setLoading(true)
+        console.log(showIndicator)
+        setIndicator(prev => ({...showIndicator, show: !showIndicator.show}))
+        console.log(showIndicator)
+        
+        setLoading(false)
     }
 
     return (
         <div className="stockChart">
-            <Plot data={data} layout={layout} config={config}/>
+                : <Plot
+                    data={data}
+                    layout={layout}
+                    config={config}
+                    />
                 {/* <Button  className="trendModalButton" variant="contained" color="grey" size="sm" onClick={onOpen}> <EditIcon pr="1px"/> Indicators </Button> */}
-                <ShowModal showTrend={showTrend} setTrend={setTrend} handleChange={handleChange} isOpen={isOpen} onClose={onClose}/>
-                    <div className="indicatorList"> 
-                        {showTrend.indicator} : {showTrend.windowSize} 
+                <ShowModal showIndicator={showIndicator} setIndicator={setIndicator} isOpen={isOpen} onClose={onClose} setLoading={setLoading}/>
+                    <div className="indicatorList">
+                        {showIndicator.indicator} : {showIndicator.windowSize}
                         <div className="icons">
-                            <p className="eye" onClick={handleChange}> {showTrend.show && showTrend.eye ? <ViewIcon onClick={toggleEye} pr="1px" boxSize={5}/> : <ViewOffIcon onClick={toggleEye} pb="2px" boxSize={5} /> }</p>
-                            <p className="edit" onClick={onOpen} > <EditIcon /> </p> 
+                            <p className="eye"> {showIndicator.show ? <ViewIcon onClick={()=>handleChange()} pr="1px" boxSize={5}/> : <ViewOffIcon onClick={()=>handleChange()} pb="2px" boxSize={5} /> }</p>
+                            <p className="edit" onClick={onOpen} > <EditIcon /> </p>
                         </div>
                     </div>
         </div>
     )
 }
 
-const ShowModal = ({ showTrend, setTrend, handleChange, isOpen, onClose }) => {
-        return (
-            <Modal className="modal" isOpen={isOpen} onClose={onClose} isCentered size="xl">
-                <ModalOverlay />
-                <ModalContent>
+const ShowModal = ({ showIndicator, windowSize, setIndicator, isOpen, onClose, setLoading }) => {
+
+    const windowSizeHandler = (e) => {
+        setLoading(true)
+        setIndicator(prev => ({...showIndicator, windowSize: e.target.value }))
+        localStorage.setItem('indicator', JSON.stringify(showIndicator))
+        console.log(showIndicator)
+        onClose();
+        setLoading(false)
+    }
+
+    return (
+        <Modal className="modal" isOpen={isOpen} onClose={onClose} isCentered size="xl">
+            <ModalOverlay />
+            <ModalContent>
                     <ModalHeader>Indicator Option</ModalHeader>
                     <hr />
                     <ModalCloseButton />
                     <ModalBody>
-                            <Table> 
+                            <Table>
                                 <Thead>
                                     <Tr>
                                         <Th>Indicator</Th>
@@ -83,16 +112,10 @@ const ShowModal = ({ showTrend, setTrend, handleChange, isOpen, onClose }) => {
                                     </Tr>
                                 </Thead>
                                 <Tbody>
-                                    <Td>
-                                        Trend line 
-                                        {/* <Checkbox size="lg" defaultChecked={(showTrend.show).toString()} ischecked={(!showTrend.show).toString()} onChange={handleChange}/>  */}
-                                    </Td>
-                                    <Td>
-                                        <div>
-                                            <input type="number" required className="windowSize" disabled={!showTrend.show} value={showTrend.windowSize} onChange={e => setTrend(prev => ({...showTrend, windowSize: e.target.value}))}/>
-                                            <label> (1-100) </label> 
-                                        </div>
-                                    </Td>
+                                    <Tr>
+                                        <Td>Trend line</Td>
+                                        <Td><input type="number" ref={windowSize} placeholder=" (1-100) " required name="windowSize" className="windowSize" disabled={!showIndicator.show} onBlur={(e) => windowSizeHandler(e)}/></Td>
+                                    </Tr>
                                 </Tbody>
                             </Table>
                     </ModalBody>
@@ -101,9 +124,9 @@ const ShowModal = ({ showTrend, setTrend, handleChange, isOpen, onClose }) => {
                         Save
                         </Button>
                     </ModalFooter>
-                </ModalContent>
-            </Modal>
-            )
+            </ModalContent>
+        </Modal>
+        )
     }
 
 const config= {

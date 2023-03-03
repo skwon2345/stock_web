@@ -16,35 +16,35 @@ class StockRetrieveDestroy(generics.RetrieveDestroyAPIView):
     lookup_field = "symbol"
     # permission_classes = [IsAdminUser]
 
-    def retrieve(self, request, *args, **kwargs):
-        symbol = self.kwargs.get("symbol")
-        try:
-            # TODO: Check if yf contains latest price information
-            company = yf.Ticker(symbol)
-        except:
-            raise Http404
-        else:
-            company_info = company.info
-            stock_dict = {
-                "symbol": symbol,
-                "name": company_info["shortName"],
-                "sector": company_info["sector"],
-                "website": company_info["website"],
-                "price": round(
-                    company.history(period="1d").Close.tolist()[0], 2
-                ),
-                "recommendation_key": company_info.info["recommendationKey"],
-            }
+    # def retrieve(self, request, *args, **kwargs):
+    #     symbol = self.kwargs.get("symbol")
+    #     try:
+    #         # TODO: Check if yf contains latest price information
+    #         company = yf.Ticker(symbol)
+    #     except:
+    #         raise Http404
+    #     else:
+    #         company_info = company.info
+    #         stock_dict = {
+    #             "symbol": symbol,
+    #             "name": company_info["shortName"],
+    #             "sector": company_info["sector"],
+    #             "website": company_info["website"],
+    #             "price": round(
+    #                 company.history(period="1d").Close.tolist()[0], 2
+    #             ),
+    #             "recommendation_key": company_info.info["recommendationKey"],
+    #         }
 
-            obj, created = Stock.objects.update_or_create(
-                symbol=symbol, defaults=stock_dict
-            )
+    #         obj, created = Stock.objects.update_or_create(
+    #             symbol=symbol, defaults=stock_dict
+    #         )
 
-            # TODO: add else: to update latest candle information and stock.price information
+    #         # TODO: add else: to update latest candle information and stock.price information
 
-        serializer = self.get_serializer(obj)
+    #     serializer = self.get_serializer(obj)
 
-        return Response(serializer.data)
+    #     return Response(serializer.data)
 
 
 class StockList(generics.ListAPIView):

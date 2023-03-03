@@ -1,63 +1,53 @@
-import React, { useState, useEffect } from 'react';
-import axios from 'axios';
-import { useLocation, NavLink, Routes, Route  } from 'react-router-dom'
+import React, { useState } from 'react';
+import { useLocation } from 'react-router-dom'
 import { StockChart } from './StockChart'
-import { ChakraProvider } from '@chakra-ui/react'
-
+import { ChakraProvider, CircularProgress} from '@chakra-ui/react'
 import './styles.css';
 
 export const StockDetails = () => {
-  const [stockData, setStockData] = useState({});
-  const stock_symbol = useLocation().state;
+  const stock = useLocation().state;
   const [active, setActive] = useState("chart")
+  const [isLoading, setLoading] = useState(true);
 
-  useEffect(() => {
-    const fetchData = async () => {
-      const stockData_url = `http://127.0.0.1:8000/api/stock/${stock_symbol}`
-      
-      await axios.get(stockData_url)
-      .then(function(response) {
-          // console.log(response.data);
-          setStockData(response.data);
-      })
-      .catch(function(error) {
-          console.log("실패(데이터)");
-      })
-    }
-    fetchData();
-  },[]);
+  console.log(active)
 
-  if (stockData.length === 0) {
-    return null;
-  }
-
-  const DetailHeader = ({stockData}) => {
-    //stockData로 변경 !!!!
+  const DetailHeader = () => {
     return (
       <div className="header">
-        {stockData.symbol}
+        {stock.symbol}
       </div>
     )
+  }
+
+  const clickHandler = (e, menu) => {
+    e.preventDefault();
+    setActive(menu);
+    setLoading(true);
   }
 
   return (
     <div className='stockDetails'>
       <ChakraProvider>
-        <DetailHeader stockData={stockData}/>
+        <DetailHeader />
         <div className="board">
-          <div className="menuBar">
-            <ul>
-                <li onClick={() => setActive("chart")}>Chart</li>
-                <li onClick={() => setActive("finance")}>Finance</li>
-                <li onClick={() => setActive("insider")}>Insider</li>
-                <li onClick={() => setActive("news")}>News</li>
-            </ul>
-          </div>
+            <div className="menuBar">
+              <ul>
+                  <li onClick={(e) => clickHandler(e, "chart")}>Chart</li>
+                  <li onClick={(e) => clickHandler(e, "finance")}>Finance</li>
+                  <li onClick={(e) => clickHandler(e, "insider")}>Insider</li>
+                  <li onClick={(e) => clickHandler(e, "news")}>News</li>
+              </ul>
+              </div>
           <div>
-          {active === "chart" &&  <Chart />}
-          {active === "finance" &&  <FinancialStatement />}
-          {active === "insider" &&  <InsiderTrade />}
-          {active === "news" &&  <News />}
+            {active === "chart" && 
+              <div className="chart">
+                {isLoading && <CircularProgress isIndeterminate color="teal.300" paddingTop="200px" />}
+                <StockChart stock_symbol={stock.symbol} isLoading={isLoading} setLoading={setLoading} active={active}/>
+              </div>
+            }
+            {active === "finance" &&  <FinancialStatement />}
+            {active === "insider" &&  <InsiderTrade />}
+            {active === "news" &&  <News />}
           </div>
         </div>
       </ChakraProvider>
@@ -65,41 +55,32 @@ export const StockDetails = () => {
   )
 }
 
-export const Chart = () => {
-    const location = useLocation();
-    const stock_symbol = location.state;
-    return(
-      <div className="chart">
-        <StockChart stock_symbol={stock_symbol} />
-      </div>
-    )
-  }
-
 export const FinancialStatement = () => {
-  const stock_symbol = useLocation().state;
+  const stock = useLocation().state;
+  console.log(stock);
   return (
     <div className='financialStatement'>
-      {stock_symbol} financial statement
+      {stock.symbol} financial statement
     </div>
   )
 }
 
 export const InsiderTrade = () => {
-  const stock_symbol = useLocation().state;
+  const stock = useLocation().state;
 
   return (
     <div className='insiderTrade'>
-      InsiderTrade {stock_symbol}
+      InsiderTrade {stock.symbol}
     </div>
   )
 }
 
 export const News = () => {
-  const stock_symbol = useLocation().state;
+  const stock = useLocation().state;
 
   return (
     <div className='news'>
-      News {stock_symbol}
+      News {stock.symbol}
     </div>
   )
 }

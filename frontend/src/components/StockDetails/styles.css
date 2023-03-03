@@ -1,8 +1,10 @@
 .header {
+  display: flex;
   height: 170px;
   width: 70%;
   background-color: rgb(167, 167, 167);
-  border-radius: 10px;
+  color: #242526;
+  border-radius: 5px;
   margin: 30px;
 }
 
@@ -15,8 +17,7 @@
 }
 
 .menuBar {
-  width: 70%;
-  border-bottom: 2px solid rgb(167, 167, 167);
+  min-width: 600px;
 }
 
 .menuBar > ul {
@@ -24,9 +25,8 @@
   flex-direction: row;
   justify-content: space-between;
   align-items: center;
-  height: 60px;
+  height: 70px;
   width: 100%;
-  padding: 5px;
   color: rgb(167, 167, 167);
 }
 
@@ -86,7 +86,7 @@
 
 .indicatorList {
   position: absolute;
-  top: 13.1%;
+  top: 13.8%;
   right: 10%;
   display: flex;
   justify-content: space-evenly;

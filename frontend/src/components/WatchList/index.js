@@ -11,7 +11,7 @@ const WatchList = () => {
             const url = "http://127.0.0.1:8000/api/stock/";
             await axios.get(url)
             .then(function(response) {
-                // console.log(response.data);
+                console.log(response.data)
                 setStockData(response.data);
             })
             .catch(function(error) {
@@ -31,7 +31,7 @@ const WatchList = () => {
                 {stockData.map((stock, index) => {
                     return (
                         <li key={index}>
-                            <Link to={`/stockdetails/${stock.symbol}`} state={stock.symbol}>
+                            <Link to={`/stockdetails/${stock.symbol}`} state={stock}>
                                 <StockCard 
                                     stock={stock} 
                                     id={index}
